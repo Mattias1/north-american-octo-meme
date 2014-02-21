@@ -1,28 +1,30 @@
 from tkinter import *
 from tkinter.ttk import *
+from MattyControls import *
+
 
 class Application(Frame):
     def say_hi(self):
         print("Hi there, everyone!")
 
     def createWidgets(self):
-        self.QUIT = Button(self)
-        self.QUIT["text"] = "QUIT"
-        # self.QUIT["fg"] = "red"
-        self.QUIT["command"] = self.quit
+        #self.QUIT = Button(self)
+        #self.QUIT["text"] = "QUIT"
+        ## self.QUIT["fg"] = "red"
+        #self.QUIT["command"] = self.quit
+        #self.QUIT.pack({"side": "left"})
 
-        self.QUIT.pack({"side": "left"})
+        self.btnQuit = Btn("Quit", self)
+        self.btnQuit.command = self.quit
 
-        self.hi_there = Button(self)
-        self.hi_there["text"] = "Hello",
-        self.hi_there["command"] = self.say_hi
-
-        self.hi_there.pack({"side": "left"})
+        self.btnHi = Btn("Hello", self)
+        self.btnHi.command = self.say_hi
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack()
         self.createWidgets()
+
 
 root = Tk()
 app = Application(master=root)

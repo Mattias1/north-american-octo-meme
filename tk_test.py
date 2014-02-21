@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter.ttk import *
-from MattyControls import *
+#from MattyControls import *
 
 
 class Application(Frame):
@@ -8,26 +8,27 @@ class Application(Frame):
         print("Hi there, everyone!")
 
     def createWidgets(self):
-        #self.QUIT = Button(self)
-        #self.QUIT["text"] = "QUIT"
-        ## self.QUIT["fg"] = "red"
-        #self.QUIT["command"] = self.quit
-        #self.QUIT.pack({"side": "left"})
+        self.master.title("Test")
+        self.pack(fill=BOTH)
 
-        self.btnQuit = Btn("Quit", self)
-        self.btnQuit.command = self.quit
+        self.btnHi = Button(self, text="Hello", command=self.say_hi)
+        self.btnHi.pack(side=LEFT, padx=10, pady=10)
+        #self.btnHi.place(x=10, y=10)
 
-        self.btnHi = Btn("Hello", self)
-        self.btnHi.command = self.say_hi
+        self.btnQuit = Button(self, text="Quit", command=self.quit)
+        self.btnQuit.pack(side=LEFT, padx=0, pady=10)
+        #self.btnQuit.place(x=50, y=10)
+
+        self.btnTest = Button(self, text="Test", command=self.quit)
+        self.btnTest.pack(side=TOP, padx=0, pady=10)
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
-        self.pack()
         self.createWidgets()
 
 
 root = Tk()
+root.geometry("350x200")
 app = Application(master=root)
 app.mainloop()
-root.destroy()
 

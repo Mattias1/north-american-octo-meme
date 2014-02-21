@@ -3,11 +3,10 @@ from tkinter.ttk import *
 
 class Btn(Button):
     """Matty's button class"""
-    def __init__(self, text, parent):
+    def __init__(self, parent, rest):
         """Create a button given it's text and it's parent frame."""
-        Button.__init__(self, parent)
+        Button.__init__(self, parent, rest) # HOW TO DO THIS???
         self["text"] = text
-        self.pack()
 
     def getText(self):
         return self["text"]

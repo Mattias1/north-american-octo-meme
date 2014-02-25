@@ -1,6 +1,7 @@
 """This module contains the machine classes."""
 from buffers import Buffer
-from random import expovariate as exp, uniform
+from random import expovariate as exp, choice
+from samples import samplesA
 
 class Machine:
     """abstract"""
@@ -19,7 +20,7 @@ class MachineA(Machine):
         return 'total_produced: {}'.format(self.total_produced)
 
     def start_producing(self):
-        duration = uniform(0.8, 1.2)
+        duration = choice(samplesA)
         self.factory.schedule(duration, self.finish_producing)
 
     def finish_producing(self):

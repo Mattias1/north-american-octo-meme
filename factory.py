@@ -1,6 +1,7 @@
 from queue import PriorityQueue
 from machines import MachineA
 
+
 class Event:
     def __init__(self, time, handler):
         self.time = time
@@ -23,7 +24,8 @@ class Factory(PriorityQueue):
         PriorityQueue.__init__(self)
 
     def __str__(self):
-        return '\n'.join([str(m) for m in self.machines])
+        return ('time elapsed: {}\n'.format(self.cur_time) +
+                '\n'.join([str(m) for m in self.machines]))
 
     def start(self):
         for machine in self.machines:
@@ -43,4 +45,3 @@ class Factory(PriorityQueue):
         assert time >= 0
         event = Event(self.cur_time + time, handler)
         self.put(event)
-

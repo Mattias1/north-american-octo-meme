@@ -13,7 +13,7 @@ class MachineA(Machine):
     total_produced = 0
 
     def __init__(self, factory):
-        buffer = Buffer(factory)
+        buffer = Buffer(self, factory)
         Machine.__init__(self, buffer, factory)
 
     def __str__(self):
@@ -25,6 +25,13 @@ class MachineA(Machine):
 
     def finish_producing(self):
         self.total_produced += 1
-        self.factory.schedule(0, self.buffer.add_product)
-        self.factory.schedule(0, self.start_producing)
+        try:
+            self.buffer.add_product()
+        except:
+            self.stop()
+        else:
+            self.start_producing()
+
+    def stop(self):
+        pass
 

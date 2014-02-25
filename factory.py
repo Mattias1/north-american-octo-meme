@@ -28,6 +28,7 @@ class Factory(PriorityQueue):
                 '\n'.join([str(m) for m in self.machines]))
 
     def start(self):
+        self.schedule(1000, self.stop)
         for machine in self.machines:
             machine.start_producing()
 

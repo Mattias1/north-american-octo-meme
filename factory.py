@@ -1,6 +1,6 @@
 """This module contains the factory class"""
 from queue import PriorityQueue
-from machines import MachineA
+from machines import MachineA, MachineB
 
 
 class Event:
@@ -22,7 +22,7 @@ class Factory(PriorityQueue):
 
     def __init__(self, a, b, c, d, repairmen):
         PriorityQueue.__init__(self)
-        self.machines = [MachineA(self)]
+        self.machines = [MachineA(self), MachineB(self)]
         self.available_repairmen = repairmen
 
     def __str__(self):

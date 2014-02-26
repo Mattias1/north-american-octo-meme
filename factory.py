@@ -1,6 +1,6 @@
 """This module contains the factory class"""
 from queue import PriorityQueue
-from machines import MachineA
+from machines import MachineA, BROKEN
 
 
 class Event:
@@ -19,6 +19,7 @@ class Event:
 class Factory(PriorityQueue):
     cur_time = 0
     EOS = False
+    stats = {}
 
     def __init__(self, a, b, c, d, repairmen):
         PriorityQueue.__init__(self)
@@ -30,16 +31,18 @@ class Factory(PriorityQueue):
                 '\n'.join([str(m) for m in self.machines]))
 
     def start(self):
-        self.schedule(1000, self.stop)
+        #self.schedule(1000, self.stop)
+        self.EOS = False
         for machine in self.machines:
             machine.start_producing()
 
         while not self.empty() and not self.EOS:
+            self.stats['time'] = self.cur_time
+
             event = self.get()
             assert event.time >= self.cur_time
             self.cur_time = event.time
             event.handler()
-        print(str(self))
 
     def stop(self):
         self.EOS = True

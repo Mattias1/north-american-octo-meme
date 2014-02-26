@@ -70,10 +70,10 @@ class MachineA(Machine):
         # Dismiss the repair guy(s)
         self.factory.schedule(0, self.factory.add_repairman)
         if self.status == REPAIRING_DOUBLE:
-            self.factory.scedule(0, self.factory.add_repairman)
+            self.factory.schedule(0, self.factory.add_repairman)
         # Give the machine something to do again
         self.status = BORED
-        self.factory.scedule(0, self.start_producing)
+        self.factory.schedule(0, self.start_producing)
         # Schedule a new breakdown
         duration = 1337  # Gem. om de 8 uur (exp)
         self.factory.schedule(duration, self.start_repair)

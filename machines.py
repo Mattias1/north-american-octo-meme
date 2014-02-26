@@ -9,7 +9,9 @@ BROKEN = 2
 REPAIRING = 3
 REPAIRING_DOUBLE = 3
 
-
+#
+# Abstract base class
+#
 class Machine:
     """abstract"""
     status = BORED
@@ -21,7 +23,7 @@ class Machine:
         self.factory.schedule(self.lifetime_duration(), self.start_repair)
 
     def __str__(self):
-        return self.__class__.__name__ + '\n total_produced: {}'.format(self.total_produced)
+        return '{}\n total_produced: {}'.format(self.__class__.__name__, self.total_produced)
 
     def production_duration(self):
         raise NotImplementedError('Production duration not defined')
@@ -73,6 +75,9 @@ class Machine:
         self.factory.schedule(self.lifetime_duration, self.start_repair)
 
 
+#
+# Actual instances of the base class
+#
 class MachineA(Machine):
     def __init__(self, factory):
         buffer = Buffer(self, factory)

@@ -138,3 +138,8 @@ class MachineD(Machine):
     def repair_duration(self):
         return 1337 # exp ?h
 
+
+if __name__ == '__main__':
+    import gui
+    print('machines main')
+    gui.main()

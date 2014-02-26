@@ -69,9 +69,10 @@ class Application(Frame):
 def main():
     """The main entrypoint for this application"""
     root = Tk()
-    root.geometry("350x200")
+    root.geometry("600x400")
     app = Application(master=root)
     app.mainloop()
 
 if __name__ == '__main__':
+    print('gui main')
     main()

@@ -30,3 +30,7 @@ class Buffer:
             raise Exception('Buffer underflow.')
 
 
+if __name__ == '__main__':
+    import gui
+    print('buffers main')
+    gui.main()

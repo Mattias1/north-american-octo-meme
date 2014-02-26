@@ -70,7 +70,7 @@ class Factory(PriorityQueue):
                     temp_list.append(self.get())
             for evt in temp_list:
                 self.put(evt)
-                temp_string += str(evt) + '\n'
+                temp_string += '\n' + str(evt)
             self.stats['- queue items'] = temp_string
 
             event = self.get()

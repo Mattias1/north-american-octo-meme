@@ -35,7 +35,8 @@ class Application(Frame):
 
     def start(self):
         if not self.running:
-            self.factory = Factory(1, 0, 0, 0, 10)
+            # well, 7 or 8 :S - well, actually 10 or 11 right? :D
+            self.factory = Factory(1, 1, 1, 1, 10, 7)
             sim_thread = Thread(target=self.factory.start)
             stats_thread = Thread(target=self.print_stats)
             self.running = True
@@ -56,8 +57,8 @@ class Application(Frame):
             messages = ['STATS:']
             for key, value in self.factory.stats.items():
                 messages.append(str(key) + ': ' + str(value))
-            sleep(1 / self.refresh_rate)
             self.write('\n'.join(messages))
+            sleep(1 / self.refresh_rate)
 
     def write(self, message):
         #print(message)

@@ -1,6 +1,6 @@
 """This module contains the factory class"""
 from queue import PriorityQueue
-from machines import MachineA, BROKEN
+from machines import MachineA, MachineB, MachineC, MachineD, BROKEN, BORED
 
 
 class Event:
@@ -21,10 +21,19 @@ class Factory(PriorityQueue):
     EOS = False
     stats = {}
 
-    def __init__(self, a, b, c, d, repairmen):
+    def __init__(self, a, b, c, d, repairmen_day, repairmen_night):
         PriorityQueue.__init__(self)
-        self.machines = [MachineA(self)]
-        self.available_repairmen = repairmen
+        self.machines = []
+        for _ in range(a):
+            self.machines.append(MachineA(self))
+        for _ in range(b):
+            self.machines.append(MachineB(self))
+        for _ in range(c):
+            self.machines.append(MachineC(self))
+        for _ in range(d):
+            self.machines.append(MachineD(self))
+        self.available_repairmen = repairmen_day
+        self.repairman_day_night_difference = repairmen_day - repairmen_night
 
     def __str__(self):
         return ('time elapsed: {}\n'.format(self.cur_time) +
@@ -34,7 +43,8 @@ class Factory(PriorityQueue):
         #self.schedule(1000, self.stop)
         self.EOS = False
         for machine in self.machines:
-            machine.start_producing()
+            if machine.__class__ == MachineA:
+                machine.start_producing()
 
         while not self.empty() and not self.EOS:
             self.stats['time'] = self.cur_time
@@ -61,3 +71,10 @@ class Factory(PriorityQueue):
         assert time >= 0
         event = Event(self.cur_time + time, handler)
         self.put(event)
+
+    def next_idle_machine(self, class_type):
+        for machine in self.machines:
+            if machine.__class__ == class_type and machine.status == BORED:
+                return machine
+        return None
+

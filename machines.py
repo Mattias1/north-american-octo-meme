@@ -1,7 +1,7 @@
 """This module contains the machine classes."""
 from buffers import Buffer
 from random import expovariate as exp, choice
-from samples import samplesA, samplesB
+from samples import samplesA, samplesB, samplesD
 
 BUSY = 0
 BORED = 1
@@ -13,6 +13,7 @@ REPAIRING_DOUBLE = 3
 class Machine:
     """abstract"""
     status = BORED
+    total_produced = 0
 
     def __init__(self, buffer, factory):
         self.buffer = buffer
@@ -20,8 +21,7 @@ class Machine:
         self.factory.schedule(self.lifetime_duration(), self.start_repair)
 
     def __str__(self):
-        # TODO: Add identifier as to which type (A, B, C, D) this machine is
-        return 'total_produced: {}'.format(self.total_produced)
+        return self.__class__.__name__ + '\n total_produced: {}'.format(self.total_produced)
 
     def production_duration(self):
         raise NotImplementedError('Production duration not defined')
@@ -74,8 +74,6 @@ class Machine:
 
 
 class MachineA(Machine):
-    total_produced = 0
-
     def __init__(self, factory):
         buffer = Buffer(self, factory)
         Machine.__init__(self, buffer, factory)
@@ -91,14 +89,42 @@ class MachineA(Machine):
 
 
 class MachineB(Machine):
-    total_produced = 0
-
     def __init__(self, factory):
         buffer = Buffer(self, factory)
         Machine.__init__(self, buffer, factory)
 
     def production_duration(self):
         return choice(samplesB)
+
+    def lifetime_duration(self):
+        return 1337 # exp ?h
+
+    def repair_duration(self):
+        return 1337 # exp ?h
+
+
+class MachineC(Machine):
+    def __init__(self, factory):
+        buffer = Buffer(self, factory)
+        Machine.__init__(self, buffer, factory)
+
+    def production_duration(self):
+        return 1337 # insert something here
+
+    def lifetime_duration(self):
+        return 1337 # exp ?h
+
+    def repair_duration(self):
+        return 1337 # exp ?h
+
+
+class MachineD(Machine):
+    def __init__(self, factory):
+        buffer = Buffer(self, factory)
+        Machine.__init__(self, buffer, factory)
+
+    def production_duration(self):
+        return choice(samplesD)
 
     def lifetime_duration(self):
         return 1337 # exp ?h

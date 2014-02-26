@@ -1,6 +1,6 @@
 """This module contains the factory class"""
 from queue import PriorityQueue
-from machines import MachineA, MachineB
+from machines import MachineA, MachineB, MachineC, MachineD
 
 
 class Event:
@@ -20,10 +20,19 @@ class Factory(PriorityQueue):
     cur_time = 0
     EOS = False
 
-    def __init__(self, a, b, c, d, repairmen):
+    def __init__(self, a, b, c, d, repairmen_day, repairmen_night):
         PriorityQueue.__init__(self)
-        self.machines = [MachineA(self), MachineB(self)]
-        self.available_repairmen = repairmen
+        self.machines = []
+        for i in range(a):
+            self.machines.append(MachineA(self))
+        for i in range(b):
+            self.machines.append(MachineB(self))
+        for i in range(c):
+            self.machines.append(MachineC(self))
+        for i in range(d):
+            self.machines.append(MachineD(self))
+        self.available_repairmen = repairmen_day
+        self.repairman_day_night_difference = repairmen_day - repairmen_night
 
     def __str__(self):
         return ('time elapsed: {}\n'.format(self.cur_time) +
@@ -58,3 +67,4 @@ class Factory(PriorityQueue):
         assert time >= 0
         event = Event(self.cur_time + time, handler)
         self.put(event)
+

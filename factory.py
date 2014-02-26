@@ -41,7 +41,8 @@ class Factory(PriorityQueue):
     def start(self):
         self.schedule(1000, self.stop)
         for machine in self.machines:
-            machine.start_producing()
+            if machine.__class__ == MachineA:
+                machine.start_producing()
 
         while not self.empty() and not self.EOS:
             event = self.get()
@@ -67,4 +68,10 @@ class Factory(PriorityQueue):
         assert time >= 0
         event = Event(self.cur_time + time, handler)
         self.put(event)
+
+    def next_idle_machine(self, class_type):
+        for machine in self.machines:
+            if machine.__class__ == class_type and machine.status == BORED:
+                return machine
+        return None
 

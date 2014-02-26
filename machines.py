@@ -17,10 +17,11 @@ class Machine:
     status = BORED
     total_produced = 0
 
-    def __init__(self, buffer, factory):
+    def __init__(self, buffer, factory, next_class_type):
         self.buffer = buffer
         self.factory = factory
         self.factory.schedule(self.lifetime_duration(), self.start_repair)
+        self.next_class_type = next_class_type
 
     def __str__(self):
         return '{}\n total_produced: {}'.format(self.__class__.__name__, self.total_produced)
@@ -81,7 +82,7 @@ class Machine:
 class MachineA(Machine):
     def __init__(self, factory):
         buffer = Buffer(self, factory)
-        Machine.__init__(self, buffer, factory)
+        Machine.__init__(self, buffer, factory, MachineB)
 
     def production_duration(self):
         return choice(samplesA)
@@ -96,7 +97,7 @@ class MachineA(Machine):
 class MachineB(Machine):
     def __init__(self, factory):
         buffer = Buffer(self, factory)
-        Machine.__init__(self, buffer, factory)
+        Machine.__init__(self, buffer, factory, MachineC)
 
     def production_duration(self):
         return choice(samplesB)
@@ -111,7 +112,7 @@ class MachineB(Machine):
 class MachineC(Machine):
     def __init__(self, factory):
         buffer = Buffer(self, factory)
-        Machine.__init__(self, buffer, factory)
+        Machine.__init__(self, buffer, factory, MachineD)
 
     def production_duration(self):
         return 1337 # insert something here
@@ -126,7 +127,7 @@ class MachineC(Machine):
 class MachineD(Machine):
     def __init__(self, factory):
         buffer = Buffer(self, factory)
-        Machine.__init__(self, buffer, factory)
+        Machine.__init__(self, buffer, factory, None)
 
     def production_duration(self):
         return choice(samplesD)

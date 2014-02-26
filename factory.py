@@ -1,6 +1,7 @@
 """This module contains the factory class"""
 from queue import PriorityQueue
 from machines import MachineA, MachineB, MachineC, MachineD, BROKEN, BORED
+from time import sleep
 
 
 class Event:
@@ -18,8 +19,11 @@ class Event:
 
 class Factory(PriorityQueue):
     cur_time = 0
-    EOS = False
     stats = {}
+
+    EOS = False
+    running = False
+    do_one_step = False
 
     def __init__(self, a, b, c, d, repairmen_day, repairmen_night):
         PriorityQueue.__init__(self)
@@ -40,19 +44,32 @@ class Factory(PriorityQueue):
                 '\n'.join([str(m) for m in self.machines]))
 
     def start(self):
-        #self.schedule(1000, self.stop)
-        self.EOS = False
         for machine in self.machines:
             if machine.__class__ == MachineA:
-                machine.start_producing()
+                self.schedule(0, machine.start_producing)
 
         while not self.empty() and not self.EOS:
+            if not self.running and not self.do_one_step:
+                sleep(0.2)
+                continue
+            if self.do_one_step:
+                self.do_one_step = not self.do_one_step
+
             self.stats['time'] = self.cur_time
 
             event = self.get()
             assert event.time >= self.cur_time
             self.cur_time = event.time
             event.handler()
+
+    def play(self):
+        self.running = True
+
+    def pause(self):
+        self.running = False
+
+    def step(self):
+        self.do_one_step = True
 
     def stop(self):
         self.EOS = True

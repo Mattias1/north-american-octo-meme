@@ -12,7 +12,7 @@ class Application(Frame):
         """The constructor"""
         Frame.__init__(self, master)
         self.create_widgets()
-        self.refresh_rate = 50
+        self.refresh_rate = 20
 
     def create_widgets(self):
         """Create all the buttons and other widgets"""
@@ -21,36 +21,53 @@ class Application(Frame):
 
         self.pack(fill=BOTH, expand=1, **padding)
 
-        self.bhi = Button(self, text="Start", command=self.start)
-        self.bhi.pack(anchor=NW, side=LEFT, **padding)
+        btn = Button(self, text="New", command=self.new)
+        btn.pack(anchor=NW, side=LEFT, **padding)
 
-        self.bhi = Button(self, text="Stop", command=self.stop)
-        self.bhi.pack(anchor=NW, side=LEFT, **padding)
+        btn = Button(self, text="Play", command=self.play)
+        btn.pack(anchor=NW, side=LEFT, **padding)
 
-        self.bquit = Button(self, text="Quit", command=self.exit)
-        self.bquit.pack(anchor=NW, side=LEFT, **padding)
+        btn = Button(self, text="Pause", command=self.pause)
+        btn.pack(anchor=NW, side=LEFT, **padding)
+
+        btn = Button(self, text="Step", command=self.step)
+        btn.pack(anchor=NW, side=LEFT, **padding)
+
+        btn = Button(self, text="Stop", command=self.stop)
+        btn.pack(anchor=NW, side=LEFT, **padding)
+
+        btn = Button(self, text="Exit", command=self.exit)
+        btn.pack(anchor=NW, side=LEFT, **padding)
 
         self.output = Label(text='Here comes the stats')
         self.output.pack(side=LEFT, **padding)
 
-    def start(self):
-        if not self.running:
-            # well, 7 or 8 :S - well, actually 10 or 11 right? :D
-            self.factory = Factory(1, 1, 1, 1, 10, 7)
-            sim_thread = Thread(target=self.factory.start)
-            stats_thread = Thread(target=self.print_stats)
-            self.running = True
-            sim_thread.start()
-            stats_thread.start()
-
-    def exit(self):
+    def new(self):
         self.stop()
-        self.quit()
+        self.factory = Factory(1, 1, 1, 1, 10, 7)
+        self.running = True
+        sim_thread = Thread(target=self.factory.start)
+        stats_thread = Thread(target=self.print_stats)
+        sim_thread.start()
+        stats_thread.start()
+
+    def play(self):
+        self.factory.running = True
+
+    def pause(self):
+        self.factory.running = False
+
+    def step(self):
+        self.factory.step()
 
     def stop(self):
         if self.running:
             self.running = False
-            self.factory.EOS = True
+            self.factory.stop()
+
+    def exit(self):
+        self.stop()
+        self.quit()
 
     def print_stats(self):
         while self.running:
@@ -69,7 +86,7 @@ class Application(Frame):
 def main():
     """The main entrypoint for this application"""
     root = Tk()
-    root.geometry("350x200")
+    root.geometry("550x400")
     app = Application(master=root)
     app.mainloop()
 

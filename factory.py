@@ -5,8 +5,9 @@ from time import sleep
 
 
 class Event:
-    def __init__(self, time, handler):
+    def __init__(self, time, handler, priority):
         self.time = time
+        self.priority = priority
         self.handler = handler
 
     def __call__(self):
@@ -14,7 +15,10 @@ class Event:
 
     def __lt__(self, obj):
         assert obj.__class__ == Event
-        return self.time < obj.time
+        return (self.time == obj.time and self.priority > obj.priority) or self.time < obj.time
+
+    def __str__(self):
+        return '{}, {}: {}'.format(self.time, self.priority, self.handler.__name__[0:20])
 
 
 class Factory(PriorityQueue):
@@ -40,8 +44,9 @@ class Factory(PriorityQueue):
         self.repairman_day_night_difference = repairmen_day - repairmen_night
 
     def __str__(self):
-        return ('time elapsed: {}\n'.format(self.cur_time) +
-                '\n'.join([str(m) for m in self.machines]))
+        return ('time elapsed: {}\n\n'.format(self.cur_time) +
+                '\n'.join([str(m) for m in self.machines]) +
+                '\nqueue length: ' + str(len(self)))
 
     def start(self):
         for machine in self.machines:
@@ -55,7 +60,18 @@ class Factory(PriorityQueue):
             if self.do_one_step:
                 self.do_one_step = not self.do_one_step
 
-            self.stats['time'] = self.cur_time
+            self.stats['- time'] = self.cur_time
+            self.stats['- machines'] = '\n' + '\n'.join([str(m) for m in self.machines])
+            self.stats['- queue length'] = str(self.qsize())
+            temp_list = []
+            temp_string = ''
+            for _ in range(10):
+                if not self.empty():
+                    temp_list.append(self.get())
+            for evt in temp_list:
+                self.put(evt)
+                temp_string += str(evt) + '\n'
+            self.stats['- queue items'] = temp_string
 
             event = self.get()
             assert event.time >= self.cur_time
@@ -84,9 +100,9 @@ class Factory(PriorityQueue):
         # If nothing has to be repaired right away, just let the poor guy drink his coffee
         self.available_repairmen += 1
 
-    def schedule(self, time, handler):
+    def schedule(self, time, handler, priority=0):
         assert time >= 0
-        event = Event(self.cur_time + time, handler)
+        event = Event(self.cur_time + time, handler, priority)
         self.put(event)
 
     def next_idle_machine(self, class_type):
@@ -95,3 +111,8 @@ class Factory(PriorityQueue):
                 return machine
         return None
 
+
+if __name__ == '__main__':
+    import gui
+    print('factory main')
+    gui.main()

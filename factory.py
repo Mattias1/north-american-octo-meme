@@ -60,6 +60,7 @@ class Factory(PriorityQueue):
             if self.do_one_step:
                 self.do_one_step = not self.do_one_step
 
+            # Display stats
             self.stats['- time'] = self.cur_time
             self.stats['- machines'] = '\n' + '\n'.join([str(m) for m in self.machines])
             self.stats['- queue length'] = str(self.qsize())

@@ -1,13 +1,13 @@
 """This module contains the machine classes."""
-from buffers import Buffer
-from random import expovariate as exp, choice
-from samples import samplesA, samplesB, samplesD
-
 BUSY = 0
 BORED = 1
 BROKEN = 2
 REPAIRING = 3
 REPAIRING_DOUBLE = 3
+
+from buffers import Buffer, BufferSizeExceeding
+from random import expovariate as exp, choice
+from samples import samplesA, samplesB, samplesD
 
 #
 # Abstract base class
@@ -16,6 +16,8 @@ class Machine:
     """abstract"""
     status = BORED
     total_produced = 0
+
+    receivers = []
 
     def __init__(self, buffer, factory, next_class_type):
         self.buffer = buffer
@@ -27,13 +29,13 @@ class Machine:
         return '{}\n total_produced: {}'.format(self.__class__.__name__, self.total_produced)
 
     def production_duration(self):
-        raise NotImplementedError('Production duration not defined')
+        raise NotImplementedError('Production duration is abstract')
 
     def lifetime_duration(self):
-        raise NotImplementedError('Lifetime duration not defined')
+        raise NotImplementedError('Lifetime duration is abstract')
 
     def repair_duration(self):
-        raise NotImplementedError('Repair duration not defined')
+        raise NotImplementedError('Repair duration is abstract')
 
     def start_producing(self):
         self.status = BUSY
@@ -47,8 +49,9 @@ class Machine:
         self.status = BORED
         try:
             self.buffer.add_product()
-        except:
-            pass # Discard the produced DVD isntead of passing it on to the buffer
+        except BufferSizeExceeding:
+            # Discard the produced DVD instead of passing it on to the buffer
+            pass
         else:
             self.total_produced += 1
             self.start_producing()

@@ -16,13 +16,12 @@ class Machine:
     """abstract"""
     status = BORED
     total_produced = 0
-    stats = {}
-
-    providers = []
 
     def __init__(self, factory, buffer):
         self.factory = factory
         self.buffer = buffer
+        self.stats = {}
+        self.providers = []
 
         self.factory.schedule(self.lifetime_duration(), self.start_repair)
 

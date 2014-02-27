@@ -15,13 +15,12 @@ class Buffer:
     """This class has no docstring."""
     storage = 0
 
-    providers = []
-    receivers = []
-
     def __init__(self, factory, size):
         self.factory = factory
+        assert size > 0
         self.size = size
-        assert self.size > 0
+        self.providers = []
+        self.receivers = []
 
     def add_product(self):
         if self.storage < self.size:

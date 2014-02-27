@@ -1,9 +1,9 @@
 """This module contains the machine classes."""
-BUSY = 0
-BORED = 1
-BROKEN = 2
-REPAIRING = 3
-REPAIRING_DOUBLE = 3
+BUSY = 'busy'
+BORED = 'bored'
+BROKEN = 'broken'
+REPAIRING = 'repairing'
+REPAIRING_DOUBLE = 'repairing_double'
 
 from buffers import Buffer, BufferSizeExceeding
 from random import expovariate as exp, choice
@@ -16,8 +16,9 @@ class Machine:
     """abstract"""
     status = BORED
     total_produced = 0
+    stats = {}
 
-    receivers = []
+    providers = []
 
     def __init__(self, buffer, factory, next_class_type):
         self.buffer = buffer
@@ -26,7 +27,14 @@ class Machine:
         self.next_class_type = next_class_type
 
     def __str__(self):
-        return '{}\n total_produced: {}'.format(self.__class__.__name__, self.total_produced)
+        return '{}\n status: {}\n total_produced: {}\n buffer_storage: {}'.format(
+                self.status, self.__class__.__name__, self.total_produced, self.buffer.storage
+            )
+
+    def update_stats(self):
+        self.stats['status'] = self.status
+        self.stats['total_produced'] = self.total_produced
+        self.stats['buffer_storage'] = self.buffer.storage
 
     def production_duration(self):
         raise NotImplementedError('Production duration is abstract')
@@ -88,7 +96,7 @@ class MachineA(Machine):
         Machine.__init__(self, buffer, factory, MachineB)
 
     def production_duration(self):
-        return choice(samplesA)
+        return choice(samplesA) # TODO: don't use samples, but interpolate between the sorted list of samples
 
     def lifetime_duration(self):
         return 1337 # exp 8h
@@ -118,7 +126,7 @@ class MachineC(Machine):
         Machine.__init__(self, buffer, factory, MachineD)
 
     def production_duration(self):
-        return 1337 # insert something here
+        return 5 # insert something here
 
     def lifetime_duration(self):
         return 1337 # exp ?h

@@ -38,3 +38,6 @@ nosetests.xml
 # Matty's stuff
 *.swp
 
+*.aux
+*.log
+*.pdf

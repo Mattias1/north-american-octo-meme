@@ -1,0 +1,83 @@
+\documentclass{article}
+
+\title{Simulation - Modeling assignment}
+\author{Mattias Beimers (3672565)}
+\date{\vspace{-3ex}}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage[margin=1.75in]{geometry}
+
+\usetikzlibrary{arrows,shapes,decorations.pathmorphing}
+
+\newcommand{\Break}{\State \textbf{break}}
+\renewcommand{\qed}{\hfill \ensuremath{\square}}
+
+\newcommand{\calC}{\ensuremath{\mathcal{C}}}
+\newcommand{\calCC}{\ensuremath{\mathcal{C'}}}
+\newcommand{\reduc}{\ensuremath{\leq_P} }
+
+\newtheorem{lemma}{Lemma}[section]
+
+\begin{document}
+    \tikzstyle{vertex}=[circle,very thick,draw=black,fill=black!25,minimum size=35pt,inner sep=2pt,align=center,text width=30pt,font=\tiny]
+    \tikzstyle{fakeVertex}=[circle,minimum size=1pt,inner sep=0pt]
+    \tikzstyle{edge} = [draw,thick,-]
+    \tikzstyle{arc} = [draw,thick,->]
+    \tikzstyle{weight} = [font=\small]
+
+    \maketitle
+
+    
+    \section{Event Graph}
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+        no sea takimata Figure \ref{fig:event-graph} sanctus est Lorem ipsum dolor sit amet.
+        \begin{figure}[H]
+            \centering
+            \begin{tikzpicture}[auto,swap]
+                \node[vertex] (s1) at (-2,0) {Machine 1 start};
+                \node[vertex] (f1) at (1,0) {Machine 1 finish};
+                \node[vertex] (s2) at (-2,-2) {Machine 2 start};
+                \node[vertex] (f2) at (1,-2) {Machine 2 finish};
+                \node[vertex] (s3) at (-2,-4) {Machine 3 start};
+                \node[vertex] (f3) at (1,-4) {Machine 3 finish};
+                \node[vertex] (s4) at (-2,-6) {Machine 4 start};
+                \node[vertex] (f4) at (1,-6) {Machine 4 finish};
+                \node[fakeVertex] (sos) at (-2.5,-1) {};
+                \node[fakeVertex] (sos2) at (2.5,-6.5) {};
+                \node[vertex] (eos) at (3,-5.5) {End of sim};
+
+                \path[arc] (s1) to (f1);
+                \path[arc,dashed] (f1) to (s2);
+                \path[arc] (s2) to (f2);
+                \path[arc,dashed] (f2) to (s3);
+                \path[arc] (s3) to (f3);
+                \path[arc,dashed] (f3) to (s4);
+                \path[arc] (s4) to (f4);
+                \path[arc] (f4) to (eos);
+
+                \path[draw,thick,->, line join=round, decorate, decoration={
+                        zigzag,
+                        segment length=8,
+                        amplitude=1,post=lineto,
+                        post length=2pt
+                    }]  (sos) -- (s1);
+                \path[draw,thick,->, line join=round, decorate, decoration={
+                        zigzag,
+                        segment length=8,
+                        amplitude=1,post=lineto,
+                        post length=2pt
+                    }]  (sos2) -- (eos);
+            \end{tikzpicture}
+            \caption{The eventgraph of the simulation.}\label{fig:event-graph}
+        \end{figure}
+
+
+\end{document}

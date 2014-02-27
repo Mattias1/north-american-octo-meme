@@ -90,7 +90,7 @@ class Application(Frame):
                 for machine in self.factory.machines:
                     if mtype == machine.__class__:
                         messages = [mtype.__name__ + ':']
-                        for key, value in self.factory.stats.items():
+                        for key, value in machine.stats.items():
                             messages.append(str(key) + ': ' + str(value))
                         message = '\n'.join(messages)
                         mlabels[i].config(text=message)

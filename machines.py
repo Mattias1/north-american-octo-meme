@@ -16,11 +16,10 @@ class Machine:
     """abstract"""
     status = BORED
     total_produced = 0
-    stats = {}
-
-    providers = []
 
     def __init__(self, factory, buffer):
+        self.stats = {}
+        self.providers = []
         self.factory = factory
         self.buffer = buffer
 
@@ -34,7 +33,7 @@ class Machine:
     def production_duration(self):
         raise NotImplementedError('Production duration is abstract')
 
-    def lifetime_duration(self):
+    
         raise NotImplementedError('Lifetime duration is abstract')
 
     def repair_duration(self):
@@ -64,7 +63,7 @@ class Machine:
             pass
         else:
             self.total_produced += 1
-            self.start_producing()
+            self.factory.schedule(0, self.start_producing)
 
     def start_repair(self):
         """In the case of a breakdown, try to start repairing."""
@@ -77,6 +76,7 @@ class Machine:
             self.status = BROKEN
 
     def end_repair(self):
+        assert False
         """Finish the repairing of the machine."""
         # Dismiss the repair guy(s)
         self.factory.add_repairman()

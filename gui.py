@@ -20,7 +20,7 @@ class Application(Frame):
         self.master.title("DVD Simulation")
         padding = {'padx': 5, 'pady': 5}
         self.pack(anchor=NW, fill=X, expand=1, **padding)
-        
+
         # The frame for all the buttons
         control_frame = Frame(self, relief=RAISED, borderwidth=1)
         control_frame.pack(anchor=N)
@@ -51,7 +51,7 @@ class Application(Frame):
 
         # The factory stats
         self.output = Label(text='Here comes the stats')
-        self.output.pack(side=LEFT, **padding)
+        self.output.pack(anchor=NW, side=LEFT, **padding)
 
     def new(self):
         self.stop()
@@ -63,13 +63,16 @@ class Application(Frame):
         stats_thread.start()
 
     def play(self):
-        self.factory.running = True
+        if self.running:
+            self.factory.running = True
 
     def pause(self):
-        self.factory.running = False
+        if self.running:
+            self.factory.running = False
 
     def step(self):
-        self.factory.step()
+        if self.running:
+            self.factory.step()
 
     def stop(self):
         if self.running:

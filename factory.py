@@ -15,7 +15,8 @@ class Event:
 
     def __lt__(self, obj):
         assert obj.__class__ == Event
-        return (self.time == obj.time and self.priority > obj.priority) or self.time < obj.time
+        return (self.time == obj.time and self.priority > obj.priority
+                or self.time < obj.time)
 
     def __str__(self):
         return '{}, {}: {}.{}'.format(self.time, self.priority,

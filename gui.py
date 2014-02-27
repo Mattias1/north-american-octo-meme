@@ -90,13 +90,14 @@ class Application(Frame):
             mlabels = [self.machinesA, self.machinesB, self.machinesC, self.machinesD]
             for i in range(4):
                 mtype = mtypes[i]
+                messages = []
                 for machine in self.factory.machines:
                     if mtype == machine.__class__:
-                        messages = [mtype.__name__ + ':']
+                        text = [mtype.__name__ + ':']
                         for key, value in machine.stats.items():
-                            messages.append(str(key) + ': ' + str(value))
-                        message = '\n'.join(messages)
-                        mlabels[i].config(text=message)
+                            text.append(str(key) + ': ' + str(value))
+                        messages.append('\n'.join(text))
+                mlabels[i].config(text='\n\n'.join(messages))
 
             # Factory
             messages = ['STATS:']
@@ -107,15 +108,13 @@ class Application(Frame):
             sleep(1 / self.refresh_rate)
 
     def write(self, message):
-        #print(message)
         self.output.config(text=message)
-
 
 
 def main():
     """The main entrypoint for this application"""
     root = Tk()
-    root.geometry("750x500")
+    root.geometry("750x600")
     app = Application(master=root)
     app.mainloop()
 

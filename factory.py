@@ -83,8 +83,8 @@ class Factory(PriorityQueue):
                 '\nqueue length: ' + str(len(self)))
 
     def update_stats(self):
+        # Update your own stats
         self.stats['- time'] = self.cur_time
-        # self.stats['- machines'] = '\n' + '\n'.join([str(m) for m in self.machines])
         temp_list = []
         temp_string = ''
         for _ in range(10):
@@ -94,6 +94,10 @@ class Factory(PriorityQueue):
             self.put(evt)
             temp_string += '\n' + str(evt)
         self.stats['- queue items'] = '({}) {}'.format(self.qsize(), temp_string)
+
+        # Update the stats of the machines
+        for machine in self.machines:
+            machine.update_stats()
 
     def start(self):
         for machine in self.machines:

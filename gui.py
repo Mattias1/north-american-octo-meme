@@ -13,7 +13,7 @@ class Application(Frame):
         """The constructor"""
         Frame.__init__(self, master)
         self.create_widgets()
-        self.refresh_rate = 20
+        self.refresh_rate = 1#20
 
     def create_widgets(self):
         """Create all the buttons and other widgets"""
@@ -95,14 +95,14 @@ class Application(Frame):
                     if mtype == machine.__class__:
                         text = [mtype.__name__ + ':']
                         for key, value in machine.stats.items():
-                            text.append(str(key) + ': ' + str(value))
+                            text.append(key + ': ' + str(value))
                         messages.append('\n'.join(text))
                 mlabels[i].config(text='\n\n'.join(messages))
 
             # Factory
             messages = ['STATS:']
             for key, value in self.factory.stats.items():
-                messages.append(str(key) + ': ' + str(value))
+                messages.append(key + ': ' + str(value))
             self.write('\n'.join(messages))
 
             sleep(1 / self.refresh_rate)

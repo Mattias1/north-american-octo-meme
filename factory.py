@@ -18,7 +18,10 @@ class Event:
         return (self.time == obj.time and self.priority > obj.priority) or self.time < obj.time
 
     def __str__(self):
-        return '{}, {}: {}'.format(self.time, self.priority, self.handler.__name__[0:20])
+        return '{}, {}: {}.{}'.format(self.time, self.priority,
+                                      self.handler.__self__.__class__.__name__,
+                                      self.handler.__name__[0:20]
+                                     )
 
 
 class Factory(PriorityQueue):
@@ -48,35 +51,41 @@ class Factory(PriorityQueue):
                 '\n'.join([str(m) for m in self.machines]) +
                 '\nqueue length: ' + str(len(self)))
 
+    def update_stats(self):
+        self.stats['- time'] = self.cur_time
+        # self.stats['- machines'] = '\n' + '\n'.join([str(m) for m in self.machines])
+        temp_list = []
+        temp_string = ''
+        for _ in range(10):
+            if not self.empty():
+                temp_list.append(self.get())
+        for evt in temp_list:
+            self.put(evt)
+            temp_string += '\n' + str(evt)
+        self.stats['- queue items'] = '({}) {}'.format(self.qsize(), temp_string)
+
     def start(self):
         for machine in self.machines:
             if machine.__class__ == MachineA:
                 self.schedule(0, machine.start_producing)
+        self.update_stats()
 
         while not self.empty() and not self.EOS:
+            # Manage sleeping
             if not self.running and not self.do_one_step:
                 sleep(0.2)
                 continue
             if self.do_one_step:
                 self.do_one_step = not self.do_one_step
 
-            self.stats['- time'] = self.cur_time
-            self.stats['- machines'] = '\n' + '\n'.join([str(m) for m in self.machines])
-            self.stats['- queue length'] = str(self.qsize())
-            temp_list = []
-            temp_string = ''
-            for _ in range(10):
-                if not self.empty():
-                    temp_list.append(self.get())
-            for evt in temp_list:
-                self.put(evt)
-                temp_string += '\n' + str(evt)
-            self.stats['- queue items'] = temp_string
-
+            # Manage events
             event = self.get()
             assert event.time >= self.cur_time
             self.cur_time = event.time
             event.handler()
+
+            # Statistics
+            self.update_stats()
 
     def play(self):
         self.running = True

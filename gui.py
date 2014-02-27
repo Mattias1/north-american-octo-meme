@@ -4,6 +4,7 @@ from threading import Thread
 from time import sleep
 
 from factory import Factory
+import machines
 
 class Application(Frame):
     running = False
@@ -18,27 +19,37 @@ class Application(Frame):
         """Create all the buttons and other widgets"""
         self.master.title("DVD Simulation")
         padding = {'padx': 5, 'pady': 5}
-
-        self.pack(fill=BOTH, expand=1, **padding)
-
-        btn = Button(self, text="New", command=self.new)
+        self.pack(anchor=NW, fill=X, expand=1, **padding)
+        
+        # The frame for all the buttons
+        control_frame = Frame(self, relief=RAISED, borderwidth=1)
+        control_frame.pack(anchor=N)
+        btn = Button(control_frame, text="New", command=self.new)
+        btn.pack(anchor=NW, side=LEFT, **padding)
+        btn = Button(control_frame, text="Play", command=self.play)
+        btn.pack(anchor=NW, side=LEFT, **padding)
+        btn = Button(control_frame, text="Pause", command=self.pause)
+        btn.pack(anchor=NW, side=LEFT, **padding)
+        btn = Button(control_frame, text="Step", command=self.step)
+        btn.pack(anchor=NW, side=LEFT, **padding)
+        btn = Button(control_frame, text="Stop", command=self.stop)
+        btn.pack(anchor=NW, side=LEFT, **padding)
+        btn = Button(control_frame, text="Exit", command=self.exit)
         btn.pack(anchor=NW, side=LEFT, **padding)
 
-        btn = Button(self, text="Play", command=self.play)
-        btn.pack(anchor=NW, side=LEFT, **padding)
+        # The machine stats
+        stat_frame = Frame(self)
+        stat_frame.pack(anchor=NW, fill=BOTH, expand=1)
+        self.machinesA = Label(stat_frame, text='A')
+        self.machinesA.pack(anchor=NW, side=LEFT, **padding)
+        self.machinesB = Label(stat_frame, text='B')
+        self.machinesB.pack(anchor=NW, side=LEFT, **padding)
+        self.machinesC = Label(stat_frame, text='C')
+        self.machinesC.pack(anchor=NW, side=LEFT, **padding)
+        self.machinesD = Label(stat_frame, text='D')
+        self.machinesD.pack(anchor=NW, side=LEFT, **padding)
 
-        btn = Button(self, text="Pause", command=self.pause)
-        btn.pack(anchor=NW, side=LEFT, **padding)
-
-        btn = Button(self, text="Step", command=self.step)
-        btn.pack(anchor=NW, side=LEFT, **padding)
-
-        btn = Button(self, text="Stop", command=self.stop)
-        btn.pack(anchor=NW, side=LEFT, **padding)
-
-        btn = Button(self, text="Exit", command=self.exit)
-        btn.pack(anchor=NW, side=LEFT, **padding)
-
+        # The factory stats
         self.output = Label(text='Here comes the stats')
         self.output.pack(side=LEFT, **padding)
 
@@ -71,10 +82,25 @@ class Application(Frame):
 
     def print_stats(self):
         while self.running:
+            # Machine A-D
+            mtypes = [machines.MachineA, machines.MachineB, machines.MachineC, machines.MachineD]
+            mlabels = [self.machinesA, self.machinesB, self.machinesC, self.machinesD]
+            for i in range(4):
+                mtype = mtypes[i]
+                for machine in self.factory.machines:
+                    if mtype == machine.__class__:
+                        messages = [mtype.__name__ + ':']
+                        for key, value in self.factory.stats.items():
+                            messages.append(str(key) + ': ' + str(value))
+                        message = '\n'.join(messages)
+                        mlabels[i].config(text=message)
+
+            # Factory
             messages = ['STATS:']
             for key, value in self.factory.stats.items():
                 messages.append(str(key) + ': ' + str(value))
             self.write('\n'.join(messages))
+
             sleep(1 / self.refresh_rate)
 
     def write(self, message):
@@ -86,7 +112,7 @@ class Application(Frame):
 def main():
     """The main entrypoint for this application"""
     root = Tk()
-    root.geometry("600x400")
+    root.geometry("750x500")
     app = Application(master=root)
     app.mainloop()
 

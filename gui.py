@@ -13,7 +13,7 @@ class Application(Frame):
         """The constructor"""
         Frame.__init__(self, master)
         self.create_widgets()
-        self.refresh_rate = 1#20
+        self.refresh_rate = 5
 
     def create_widgets(self):
         """Create all the buttons and other widgets"""

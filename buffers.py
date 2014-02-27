@@ -28,7 +28,7 @@ class Buffer:
             # Since we have a non empty storage, try to activate all receivers
             for machine in self.receivers:
                 if machine.status == BORED:
-                    machine.start_producing()
+                    self.factory.schedule(0, machine.start_producing)
         else:
             raise BufferSizeExceeding('Buffer overflow.')
 

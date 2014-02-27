@@ -36,6 +36,7 @@ class Machine:
         raise NotImplementedError('Production duration is abstract')
 
     
+    def lifetime_duration(self):
         raise NotImplementedError('Lifetime duration is abstract')
 
     def repair_duration(self):
@@ -78,7 +79,6 @@ class Machine:
             self.status = BROKEN
 
     def end_repair(self):
-        assert False
         """Finish the repairing of the machine."""
         # Dismiss the repair guy(s)
         self.factory.add_repairman()

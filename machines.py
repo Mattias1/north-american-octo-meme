@@ -5,7 +5,7 @@ BROKEN = 'broken'
 REPAIRING = 'repairing'
 REPAIRING_DOUBLE = 'repairing_double'
 
-from buffers import Buffer, BufferSizeExceeding
+from buffers import BufferSizeExceeding, Buffer
 from random import expovariate as exp, choice
 from samples import samplesA, samplesB, samplesD
 
@@ -20,16 +20,11 @@ class Machine:
 
     providers = []
 
-    def __init__(self, buffer, factory, next_class_type):
-        self.buffer = buffer
+    def __init__(self, factory, buffer):
         self.factory = factory
-        self.factory.schedule(self.lifetime_duration(), self.start_repair)
-        self.next_class_type = next_class_type
+        self.buffer = buffer
 
-    def __str__(self):
-        return '{}\n status: {}\n total_produced: {}\n buffer_storage: {}'.format(
-                self.status, self.__class__.__name__, self.total_produced, self.buffer.storage
-            )
+        self.factory.schedule(self.lifetime_duration(), self.start_repair)
 
     def update_stats(self):
         self.stats['status'] = self.status
@@ -46,8 +41,15 @@ class Machine:
         raise NotImplementedError('Repair duration is abstract')
 
     def start_producing(self):
-        self.status = BUSY
-        self.factory.schedule(self.production_duration(), self.finish_producing)
+        for provider in self.providers:
+            try:
+                provider.remove_product()
+            except BufferSizeExceeding:
+                pass
+            else:
+                self.status = BUSY
+                self.factory.schedule(self.production_duration(), self.finish_producing)
+                return
 
     def finish_producing(self):
         # If the machine is broken, the current item he's working on is thrown away
@@ -91,12 +93,14 @@ class Machine:
 # Actual instances of the base class
 #
 class MachineA(Machine):
-    def __init__(self, factory):
-        buffer = Buffer(self, factory)
-        Machine.__init__(self, buffer, factory, MachineB)
+    def start_producing(self):
+        # MachineA has no providers
+        self.status = BUSY
+        self.factory.schedule(self.production_duration(), self.finish_producing)
 
     def production_duration(self):
-        return choice(samplesA) # TODO: don't use samples, but interpolate between the sorted list of samples
+        # TODO: don't use samples, but interpolate between the sorted list of samples
+        return choice(samplesA)
 
     def lifetime_duration(self):
         return 1337 # exp 8h
@@ -106,10 +110,6 @@ class MachineA(Machine):
 
 
 class MachineB(Machine):
-    def __init__(self, factory):
-        buffer = Buffer(self, factory)
-        Machine.__init__(self, buffer, factory, MachineC)
-
     def production_duration(self):
         return choice(samplesB)
 
@@ -121,10 +121,6 @@ class MachineB(Machine):
 
 
 class MachineC(Machine):
-    def __init__(self, factory):
-        buffer = Buffer(self, factory)
-        Machine.__init__(self, buffer, factory, MachineD)
-
     def production_duration(self):
         return 5 # insert something here
 
@@ -137,8 +133,8 @@ class MachineC(Machine):
 
 class MachineD(Machine):
     def __init__(self, factory):
-        buffer = Buffer(self, factory)
-        Machine.__init__(self, buffer, factory, None)
+        buffer = Buffer(factory, float('inf'))
+        Machine.__init__(self, factory, buffer)
 
     def production_duration(self):
         return choice(samplesD)

@@ -14,14 +14,13 @@ class BufferSizeExceeding(Exception):
 class Buffer:
     """This class has no docstring."""
     storage = 0
-    size = 20
 
     providers = []
     receivers = []
 
-    def __init__(self, machine, factory):
+    def __init__(self, factory, size):
         self.factory = factory
-        self.machine = machine
+        self.size = size
         assert self.size > 0
 
     def add_product(self):

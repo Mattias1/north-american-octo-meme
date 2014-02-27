@@ -55,7 +55,7 @@ class Application(Frame):
 
     def new(self):
         self.stop()
-        self.factory = Factory(1, 1, 1, 1, 10, 7)
+        self.factory = Factory(10, 7)
         self.running = True
         sim_thread = Thread(target=self.factory.start)
         stats_thread = Thread(target=self.print_stats)

@@ -6,7 +6,7 @@ REPAIRING = 'repairing'
 REPAIRING_DOUBLE = 'repairing_double'
 
 from buffers import BufferSizeExceeding, Buffer
-from random import expovariate as exp, choice
+from random import expovariate as exp, choice, randint
 from samples import samplesA, samplesB, samplesD
 
 #
@@ -25,7 +25,9 @@ class Machine:
         self.stats = {}
         self.providers = []
 
-        self.factory.schedule(self.lifetime_duration(), self.start_repair)
+        duration = self.lifetime_duration()
+        if duration != -1:
+            self.factory.schedule(duration, self.start_repair)
 
     def update_stats(self):
         self.stats['status'] = self.status
@@ -43,6 +45,8 @@ class Machine:
         raise NotImplementedError('Repair duration is abstract')
 
     def start_producing(self):
+        if self.status != BORED:
+            return
         for provider in self.providers:
             try:
                 provider.remove_product()
@@ -66,13 +70,14 @@ class Machine:
             pass
         else:
             self.total_produced += 1
-            self.factory.schedule(0, self.start_producing)
+            self.factory.schedule(0, self.start_producing, 0) # Low priority - must be lower than the one in MachineC.finish_producing
 
     def start_repair(self):
         """In the case of a breakdown, try to start repairing."""
         if False:
             self.status = REPAIRING_DOUBLE  # Not sure right now
         if self.factory.available_repairmen > 0:
+            self.factory.available_repairmen -= 1
             self.status = REPAIRING
             self.factory.schedule(self.repair_duration(), self.end_repair)
         else:
@@ -88,7 +93,9 @@ class Machine:
         self.status = BORED
         self.factory.schedule(0, self.start_producing)
         # Schedule a new breakdown
-        self.factory.schedule(self.lifetime_duration(), self.start_repair)
+        duration = self.lifetime_duration()
+        if duration != -1:
+            self.factory.schedule(duration, self.start_repair)
 
 
 #
@@ -105,10 +112,10 @@ class MachineA(Machine):
         return choice(samplesA)
 
     def lifetime_duration(self):
-        return 1337 # exp 8h
+        return exp(1 / (8*3600)) # Exponential distribution with a mean of 8 hours
 
     def repair_duration(self):
-        return 1337 # exp 2h
+        return exp(1 / (2*3600)) # Exponential distribution with a mean of 2 hours
 
 
 class MachineB(Machine):
@@ -116,10 +123,17 @@ class MachineB(Machine):
         return choice(samplesB)
 
     def lifetime_duration(self):
-        return 1337 # exp ?h
+        return -1 # This machine doesnt break like that, it sometimes loses a DVD and just has to start over
 
     def repair_duration(self):
-        return 1337 # exp ?h
+        raise Exception("This machine (B) doesn't break like that")
+
+    def finish_producing(self):
+        # Discard DVD in 2% of the cases
+        if randint(1, 100) <= 2:
+            self.factory.schedule(0, self.start_producing)
+            return
+        super().finish_producing()
 
 
 class MachineC(Machine):
@@ -127,10 +141,16 @@ class MachineC(Machine):
         return 5 # insert something here
 
     def lifetime_duration(self):
-        return 1337 # exp ?h
+        return -1 # This crashes every 3% of the DVD's
 
     def repair_duration(self):
-        return 1337 # exp ?h
+        return 5*60 # 5 minutes exactly
+
+    def finish_producing(self):
+        super().finish_producing()
+        # Cleaning after producion of 3% of the DVD's
+        if randint(1,100) <= 3:
+            self.factory.schedule(0, self.start_repair, 9) # Priority must be higher than the start producing scheduled in the super.finish_producing
 
 
 class MachineD(Machine):
@@ -142,10 +162,10 @@ class MachineD(Machine):
         return choice(samplesD)
 
     def lifetime_duration(self):
-        return 1337 # exp ?h
+        return 1337 # 200 DVD's, with weird distribution for +-2 or +- 1
 
     def repair_duration(self):
-        return 1337 # exp ?h
+        return 1337 # standard avg 15 min dev 1 min
 
 
 if __name__ == '__main__':

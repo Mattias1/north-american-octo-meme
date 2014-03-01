@@ -2,15 +2,6 @@
 from machines import BORED
 
 
-class BufferSizeExceeding(Exception):
-    def __init__(self, value):
-        Exception.__init__(self)
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-
 class Buffer:
     """This class has no docstring."""
     storage = 0
@@ -30,7 +21,7 @@ class Buffer:
                 if machine.status == BORED:
                     self.factory.schedule(0, machine.start_producing)
         else:
-            raise BufferSizeExceeding('Buffer overflow.')
+            raise Exception('Buffer overflow.')
 
     def remove_product(self):
         if self.storage > 0:
@@ -40,7 +31,8 @@ class Buffer:
                 if machine.status == BORED:
                     machine.start_producing()
         else:
-            raise BufferSizeExceeding('Buffer underflow.')
+            raise Exception('Buffer underflow.')
+
 
 class AssemblyLine(Buffer):
     def add_product(self):

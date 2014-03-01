@@ -9,13 +9,9 @@ from buffers import Buffer
 from random import expovariate as exp, normalvariate as normal, choice, randint
 from samples import samplesA, samplesB, samplesD
 
-#
-# Abstract base class
-#
-
 
 class Machine:
-    """abstract"""
+    """Abstract base class for machines"""
     status = BORED
     total_produced = 0
 
@@ -56,15 +52,16 @@ class Machine:
                 return
 
     def finish_producing(self):
-        # If the machine is broken, the current item he's working on is thrown away
+        # NOTE: If the machine is broken, the current item he's working on is thrown away
         if self.status != BUSY:
             return
-        # When the machine is OK, update the stats to say the DVD is produced
+
         self.status = BORED
         if self.buffer.storage < self.buffer.size:
             self.buffer.add_product()
             self.total_produced += 1
-            # Low priority - must be lower than the one in MachineC.finish_producing and machineD.finish_producing
+            # NOTE: Low priority - must be lower than the one in
+            # MachineC.finish_producing and machineD.finish_producing
             self.factory.schedule(0, self.start_producing, 0)
 
     def start_repair(self):
@@ -84,9 +81,11 @@ class Machine:
         self.factory.add_repairman()
         if self.status == REPAIRING_DOUBLE:
             self.factory.schedule(0, self.factory.add_repairman)
+
         # Give the machine something to do again
         self.status = BORED
         self.factory.schedule(0, self.start_producing)
+
         # Schedule a new breakdown
         duration = self.lifetime_duration()
         if duration != -1:
@@ -94,7 +93,7 @@ class Machine:
 
 
 #
-# Actual instances of the base class
+# Actual instances of the Machine base class
 #
 class MachineA(Machine):
     def start_producing(self):
@@ -107,10 +106,12 @@ class MachineA(Machine):
         return choice(samplesA)
 
     def lifetime_duration(self):
-        return exp(1 / (8 * 3600))  # Exponential distribution with a mean of 8 hours
+        # Exponential distribution with a mean of 8 hours
+        return exp(1 / (8 * 3600))
 
     def repair_duration(self):
-        return exp(1 / (2 * 3600))  # Exponential distribution with a mean of 2 hours
+        # Exponential distribution with a mean of 2 hours
+        return exp(1 / (2 * 3600))
 
 
 class MachineB(Machine):
@@ -118,7 +119,9 @@ class MachineB(Machine):
         return choice(samplesB)
 
     def lifetime_duration(self):
-        return -1  # This machine doesnt break like that, it sometimes loses a DVD and just has to start over
+        # This machine doesnt break like that.
+        # It sometimes loses a DVD and just has to start over.
+        return -1
 
     def repair_duration(self):
         raise Exception("This machine (B) doesn't break like that")
@@ -146,8 +149,8 @@ class MachineC(Machine):
         super().finish_producing()
         # Cleaning after producion of 3% of the DVD's
         if randint(1, 100) <= 3:
-            self.factory.schedule(
-                0, self.start_repair, 9)  # Priority must be higher than the start producing scheduled in the super.finish_producing
+            # Priority must be higher than the start producing scheduled in the super.finish_producing
+            self.factory.schedule(0, self.start_repair, 9)
 
 
 class MachineD(Machine):
@@ -164,14 +167,15 @@ class MachineD(Machine):
         return -1  # This machine doesnt break like that, it sometimes loses a DVD and just has to start over
 
     def repair_duration(self):
-        return normal(15 * 60, 1 * 60)  # Normal deviation with avg 15 min and dev 1 min
+        # Normal deviation with avg 15 min and dev 1 min
+        return normal(15 * 60, 1 * 60)
 
     def finish_producing(self):
         super().finish_producing()
         dif = self.total_produced - self.last_produced_count_replace_ink
         if self.total_produced - self.last_produced_count_replace_ink == self.next_dif_replace_ink:
-            self.factory.schedule(
-                0, self.start_repair, 9)  # Priority must be higher than the start producing scheduled in the super.finish_producing
+            # Priority must be higher than the start producing scheduled in the super.finish_producing
+            self.factory.schedule(0, self.start_repair, 9)
 
     def end_repair(self):
         super().end_repair()

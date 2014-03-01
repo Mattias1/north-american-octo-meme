@@ -1,7 +1,7 @@
 """This module contains the factory class"""
 from queue import PriorityQueue
 from machines import MachineA, MachineB, MachineC, MachineD, BROKEN
-from buffers import Buffer
+from buffers import Buffer, AssemblyLine
 from time import sleep
 
 
@@ -47,8 +47,8 @@ class Factory(PriorityQueue):
         bufferA12.providers = [machineA1, machineA2]
         bufferA34.providers = [machineA3, machineA4]
 
-        bufferB1 = Buffer(self, 20)  # TODO Assembly line
-        bufferB2 = Buffer(self, 20)  # TODO Assembly line
+        bufferB1 = AssemblyLine(self, 20)  # TODO Assembly line
+        bufferB2 = AssemblyLine(self, 20)  # TODO Assembly line
         machineB1 = MachineB(self, bufferB1)
         machineB2 = MachineB(self, bufferB2)
         machineB1.providers = [bufferA12, bufferA34]

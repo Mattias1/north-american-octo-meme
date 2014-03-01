@@ -13,9 +13,9 @@ class Buffer:
         self.providers = []
         self.receivers = []
 
-    def add_product(self):
-        if self.storage < self.size:
-            self.storage += 1
+    def add_product(self, amount=1):
+        if self.storage + amount <= self.size:
+            self.storage += amount
             # Since we have a non empty storage, try to activate all receivers
             for machine in self.receivers:
                 if machine.status == BORED:
@@ -23,9 +23,9 @@ class Buffer:
         else:
             raise Exception('Buffer overflow.')
 
-    def remove_product(self):
-        if self.storage > 0:
-            self.storage -= 1
+    def remove_product(self, amount=1):
+        if self.storage >= amount:
+            self.storage -= amount
             # Since we have a non full storage, try to activate all providers
             for machine in self.providers:
                 if machine.status == BORED:
@@ -35,7 +35,7 @@ class Buffer:
 
 
 class AssemblyLine(Buffer):
-    def add_product(self):
+    def add_product(self, amount):
         self.put_on_line()
 
     def put_on_line(self):

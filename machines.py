@@ -14,6 +14,7 @@ class Machine:
     """Abstract base class for machines"""
     status = BORED
     total_produced = 0
+    batchsize = 1
 
     def __init__(self, factory, buffer):
         self.stats = {}
@@ -45,8 +46,8 @@ class Machine:
         if self.status != BORED:
             return
         for provider in self.providers:
-            if provider.storage > 0:
-                provider.remove_product()
+            if provider.storage >= self.batchsize:
+                provider.remove_product(self.batchsize)
                 self.status = BUSY
                 self.factory.schedule(self.production_duration(), self.finish_producing)
                 return
@@ -57,8 +58,8 @@ class Machine:
             return
 
         self.status = BORED
-        if self.buffer.storage < self.buffer.size:
-            self.buffer.add_product()
+        if self.buffer.storage + self.batchsize <= self.buffer.size:
+            self.buffer.add_product(self.batchsize)
             self.total_produced += 1
             # NOTE: Low priority - must be lower than the one in
             # MachineC.finish_producing and machineD.finish_producing
@@ -136,6 +137,8 @@ class MachineB(Machine):
 
 
 class MachineC(Machine):
+    batchsize = 20
+
     def production_duration(self):
         return 5  # insert something here
 
@@ -144,13 +147,6 @@ class MachineC(Machine):
 
     def repair_duration(self):
         return 5 * 60  # 5 minutes exactly
-
-    def finish_producing(self):
-        super().finish_producing()
-        # Cleaning after producion of 3% of the DVD's
-        if randint(1, 100) <= 3:
-            # Priority must be higher than the start producing scheduled in the super.finish_producing
-            self.factory.schedule(0, self.start_repair, 9)
 
 
 class MachineD(Machine):

@@ -55,8 +55,8 @@ class Factory(PriorityQueue):
         machineB2.providers = [bufferA12, bufferA34]
         bufferA12.receivers = [machineB1, machineB2]
         bufferA34.receivers = [machineB1, machineB2]
-        bufferB1.providers = [machineB1]
-        bufferB2.providers = [machineB2]
+        bufferB1.providers = [machineB1]  # Assembly line
+        bufferB2.providers = [machineB2]  # Assembly line
 
         bufferC1 = Buffer(self, 20)
         bufferC2 = Buffer(self, 20)

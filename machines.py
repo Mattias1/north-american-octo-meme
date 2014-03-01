@@ -5,13 +5,15 @@ BROKEN = 'broken'
 REPAIRING = 'repairing'
 REPAIRING_DOUBLE = 'repairing_double'
 
-from buffers import BufferSizeExceeding, Buffer
+from buffers import Buffer
 from random import expovariate as exp, normalvariate as normal, choice, randint
 from samples import samplesA, samplesB, samplesD
 
 #
 # Abstract base class
 #
+
+
 class Machine:
     """abstract"""
     status = BORED
@@ -37,7 +39,6 @@ class Machine:
     def production_duration(self):
         raise NotImplementedError('Production duration is abstract')
 
-    
     def lifetime_duration(self):
         raise NotImplementedError('Lifetime duration is abstract')
 
@@ -48,11 +49,8 @@ class Machine:
         if self.status != BORED:
             return
         for provider in self.providers:
-            try:
+            if provider.storage > 0:
                 provider.remove_product()
-            except BufferSizeExceeding:
-                pass
-            else:
                 self.status = BUSY
                 self.factory.schedule(self.production_duration(), self.finish_producing)
                 return
@@ -63,14 +61,11 @@ class Machine:
             return
         # When the machine is OK, update the stats to say the DVD is produced
         self.status = BORED
-        try:
+        if self.buffer.storage < self.buffer.size:
             self.buffer.add_product()
-        except BufferSizeExceeding:
-            # Discard the produced DVD instead of passing it on to the buffer
-            pass
-        else:
             self.total_produced += 1
-            self.factory.schedule(0, self.start_producing, 0) # Low priority - must be lower than the one in MachineC.finish_producing and machineD.finish_producing
+            # Low priority - must be lower than the one in MachineC.finish_producing and machineD.finish_producing
+            self.factory.schedule(0, self.start_producing, 0)
 
     def start_repair(self):
         """In the case of a breakdown, try to start repairing."""
@@ -112,10 +107,10 @@ class MachineA(Machine):
         return choice(samplesA)
 
     def lifetime_duration(self):
-        return exp(1 / (8*3600)) # Exponential distribution with a mean of 8 hours
+        return exp(1 / (8 * 3600))  # Exponential distribution with a mean of 8 hours
 
     def repair_duration(self):
-        return exp(1 / (2*3600)) # Exponential distribution with a mean of 2 hours
+        return exp(1 / (2 * 3600))  # Exponential distribution with a mean of 2 hours
 
 
 class MachineB(Machine):
@@ -123,7 +118,7 @@ class MachineB(Machine):
         return choice(samplesB)
 
     def lifetime_duration(self):
-        return -1 # This machine doesnt break like that, it sometimes loses a DVD and just has to start over
+        return -1  # This machine doesnt break like that, it sometimes loses a DVD and just has to start over
 
     def repair_duration(self):
         raise Exception("This machine (B) doesn't break like that")
@@ -139,19 +134,20 @@ class MachineB(Machine):
 
 class MachineC(Machine):
     def production_duration(self):
-        return 5 # insert something here
+        return 5  # insert something here
 
     def lifetime_duration(self):
-        return -1 # This crashes every 3% of the DVD's
+        return -1  # This crashes every 3% of the DVD's
 
     def repair_duration(self):
-        return 5*60 # 5 minutes exactly
+        return 5 * 60  # 5 minutes exactly
 
     def finish_producing(self):
         super().finish_producing()
         # Cleaning after producion of 3% of the DVD's
         if randint(1, 100) <= 3:
-            self.factory.schedule(0, self.start_repair, 9) # Priority must be higher than the start producing scheduled in the super.finish_producing
+            self.factory.schedule(
+                0, self.start_repair, 9)  # Priority must be higher than the start producing scheduled in the super.finish_producing
 
 
 class MachineD(Machine):
@@ -165,16 +161,17 @@ class MachineD(Machine):
         return choice(samplesD)
 
     def lifetime_duration(self):
-        return -1 # This machine doesnt break like that, it sometimes loses a DVD and just has to start over
+        return -1  # This machine doesnt break like that, it sometimes loses a DVD and just has to start over
 
     def repair_duration(self):
-        return normal(15*60, 1*60) # Normal deviation with avg 15 min and dev 1 min
+        return normal(15 * 60, 1 * 60)  # Normal deviation with avg 15 min and dev 1 min
 
     def finish_producing(self):
         super().finish_producing()
         dif = self.total_produced - self.last_produced_count_replace_ink
         if self.total_produced - self.last_produced_count_replace_ink == self.next_dif_replace_ink:
-            self.factory.schedule(0, self.start_repair, 9) # Priority must be higher than the start producing scheduled in the super.finish_producing
+            self.factory.schedule(
+                0, self.start_repair, 9)  # Priority must be higher than the start producing scheduled in the super.finish_producing
 
     def end_repair(self):
         super().end_repair()
@@ -183,10 +180,14 @@ class MachineD(Machine):
 
     def ink_replace_nr(self):
         p = randint(1, 100)
-        if p <= 40: return 200
-        if p <= 60: return 199
-        if p <= 80: return 201
-        if p <= 90: return 198
+        if p <= 40:
+            return 200
+        if p <= 60:
+            return 199
+        if p <= 80:
+            return 201
+        if p <= 90:
+            return 198
         return 202
 
 

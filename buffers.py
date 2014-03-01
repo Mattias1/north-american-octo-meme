@@ -42,6 +42,17 @@ class Buffer:
         else:
             raise BufferSizeExceeding('Buffer underflow.')
 
+class AssemblyLine(Buffer):
+    def add_product(self):
+        self.put_on_line()
+
+    def put_on_line(self):
+        """Puts product on assembly line."""
+        self.factory.schedule(5, self.put_in_crate)
+
+    def put_in_crate(self):
+        """Puts product in crate after assembly line."""
+        Buffer.add_product(self)
 
 if __name__ == '__main__':
     import gui

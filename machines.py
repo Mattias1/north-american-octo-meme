@@ -6,7 +6,7 @@ REPAIRING = 'repairing'
 REPAIRING_DOUBLE = 'repairing_double'
 
 from buffers import BufferSizeExceeding, Buffer
-from random import expovariate as exp, choice, randint
+from random import expovariate as exp, normalvariate as normal, choice, randint
 from samples import samplesA, samplesB, samplesD
 
 #
@@ -70,7 +70,7 @@ class Machine:
             pass
         else:
             self.total_produced += 1
-            self.factory.schedule(0, self.start_producing, 0) # Low priority - must be lower than the one in MachineC.finish_producing
+            self.factory.schedule(0, self.start_producing, 0) # Low priority - must be lower than the one in MachineC.finish_producing and machineD.finish_producing
 
     def start_repair(self):
         """In the case of a breakdown, try to start repairing."""
@@ -131,6 +131,7 @@ class MachineB(Machine):
     def finish_producing(self):
         # Discard DVD in 2% of the cases
         if randint(1, 100) <= 2:
+            self.status = BORED
             self.factory.schedule(0, self.start_producing)
             return
         super().finish_producing()
@@ -149,7 +150,7 @@ class MachineC(Machine):
     def finish_producing(self):
         super().finish_producing()
         # Cleaning after producion of 3% of the DVD's
-        if randint(1,100) <= 3:
+        if randint(1, 100) <= 3:
             self.factory.schedule(0, self.start_repair, 9) # Priority must be higher than the start producing scheduled in the super.finish_producing
 
 
@@ -157,15 +158,36 @@ class MachineD(Machine):
     def __init__(self, factory):
         buffer = Buffer(factory, float('inf'))
         Machine.__init__(self, factory, buffer)
+        self.last_produced_count_replace_ink = self.total_produced
+        self.next_dif_replace_ink = self.ink_replace_nr()
 
     def production_duration(self):
         return choice(samplesD)
 
     def lifetime_duration(self):
-        return 1337 # 200 DVD's, with weird distribution for +-2 or +- 1
+        return -1 # This machine doesnt break like that, it sometimes loses a DVD and just has to start over
 
     def repair_duration(self):
-        return 1337 # standard avg 15 min dev 1 min
+        return normal(15*60, 1*60) # Normal deviation with avg 15 min and dev 1 min
+
+    def finish_producing(self):
+        super().finish_producing()
+        dif = self.total_produced - self.last_produced_count_replace_ink
+        if self.total_produced - self.last_produced_count_replace_ink == self.next_dif_replace_ink:
+            self.factory.schedule(0, self.start_repair, 9) # Priority must be higher than the start producing scheduled in the super.finish_producing
+
+    def end_repair(self):
+        super().end_repair()
+        self.last_produced_count_replace_ink = self.total_produced
+        self.next_dif_replace_ink = self.ink_replace_nr()
+
+    def ink_replace_nr(self):
+        p = randint(1, 100)
+        if p <= 40: return 200
+        if p <= 60: return 199
+        if p <= 80: return 201
+        if p <= 90: return 198
+        return 202
 
 
 if __name__ == '__main__':

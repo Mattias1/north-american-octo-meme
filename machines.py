@@ -6,7 +6,7 @@ REPAIRING = 'repairing'
 REPAIRING_DOUBLE = 'repairing_double'
 
 from buffers import Buffer
-from random import expovariate as exp, normalvariate as normal, choice, randint
+from random import expovariate as exp, normalvariate as normal, randint, random
 from samples import samplesA, samplesB, samplesD
 
 
@@ -105,7 +105,7 @@ class MachineA(Machine):
 
     def production_duration(self):
         # TODO: don't use samples, but interpolate between the sorted list of samples
-        return choice(samplesA)
+        return interpolate_samples(samplesA)
 
     def lifetime_duration(self):
         # Exponential distribution with a mean of 8 hours
@@ -118,7 +118,7 @@ class MachineA(Machine):
 
 class MachineB(Machine):
     def production_duration(self):
-        return choice(samplesB)
+        return interpolate_samples(samplesB)
 
     def lifetime_duration(self):
         # This machine doesnt break like that.
@@ -159,7 +159,7 @@ class MachineD(Machine):
         self.next_dif_replace_ink = self.ink_replace_nr()
 
     def production_duration(self):
-        return choice(samplesD)
+        return interpolate_samples(samplesD)
 
     def lifetime_duration(self):
         return -1  # This machine doesnt break like that, it sometimes loses a DVD and just has to start over
@@ -192,6 +192,12 @@ class MachineD(Machine):
             return 198
         return 202
 
+
+def interpolate_samples(samples):
+    # Assumes samples to be sorted in ascending order
+    i = randint(0, len(samples) - 1)
+    r = random()
+    return samples[i] + r * (samples[j] - samples[i])
 
 if __name__ == '__main__':
     import gui

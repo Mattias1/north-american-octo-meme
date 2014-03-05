@@ -46,6 +46,7 @@ class AssemblyLine(Buffer):
         """Puts product in crate after assembly line."""
         Buffer.add_product(self)
 
+
 if __name__ == '__main__':
     import gui
     print('buffers main')

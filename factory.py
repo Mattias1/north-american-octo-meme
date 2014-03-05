@@ -1,6 +1,7 @@
 """This module contains the factory class"""
 from queue import PriorityQueue
 from machines import MachineA, MachineB, MachineC, MachineD, BROKEN
+from samples import samplesA, samplesB, samplesD
 from buffers import Buffer, AssemblyLine
 from time import sleep
 
@@ -37,6 +38,10 @@ class Factory(PriorityQueue):
     def __init__(self, repairmen_day, repairmen_night):
         PriorityQueue.__init__(self)
         self.machines = []
+
+        samplesA.sort()
+        samplesB.sort()
+        samplesD.sort()
 
         bufferA12 = Buffer(self, 20)
         bufferA34 = Buffer(self, 20)

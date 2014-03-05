@@ -14,6 +14,7 @@ class Machine:
     """Abstract base class for machines"""
     status = BORED
     total_produced = 0
+    total_discarded = 0 # TODO
     batchsize = 1
 
     def __init__(self, factory, buffer):
@@ -140,7 +141,8 @@ class MachineC(Machine):
     batchsize = 20
 
     def production_duration(self):
-        return 5  # insert something here
+        # One exponential with an average of 10 seconds, plus another exponential with an average of 6 seconds, plus 3 minutes.
+        return exp(1 / 10) + exp(1 / 6) + 3*60  # insert something here
 
     def lifetime_duration(self):
         return -1  # This crashes every 3% of the DVD's

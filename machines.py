@@ -195,9 +195,9 @@ class MachineD(Machine):
 
 def interpolate_samples(samples):
     # Assumes samples to be sorted in ascending order
-    i = randint(0, len(samples) - 1)
+    i = randint(0, len(samples) - 2)
     r = random()
-    return samples[i] + r * (samples[j] - samples[i])
+    return samples[i] + r * (samples[i + 1] - samples[i])
 
 if __name__ == '__main__':
     import gui

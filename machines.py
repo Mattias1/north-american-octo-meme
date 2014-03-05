@@ -6,7 +6,7 @@ REPAIRING = 'repairing'
 REPAIRING_DOUBLE = 'repairing_double'
 
 from buffers import Buffer
-from random import expovariate as exp, normalvariate as normal, choice, randint
+from random import expovariate as exp, normalvariate as normal, randint, random
 from samples import samplesA, samplesB, samplesD
 
 
@@ -14,6 +14,7 @@ class Machine:
     """Abstract base class for machines"""
     status = BORED
     total_produced = 0
+    total_discarded = 0 # TODO
     batchsize = 1
 
     def __init__(self, factory, buffer):
@@ -104,7 +105,7 @@ class MachineA(Machine):
 
     def production_duration(self):
         # TODO: don't use samples, but interpolate between the sorted list of samples
-        return choice(samplesA)
+        return interpolate_samples(samplesA)
 
     def lifetime_duration(self):
         # Exponential distribution with a mean of 8 hours
@@ -117,7 +118,7 @@ class MachineA(Machine):
 
 class MachineB(Machine):
     def production_duration(self):
-        return choice(samplesB)
+        return interpolate_samples(samplesB)
 
     def lifetime_duration(self):
         # This machine doesnt break like that.
@@ -140,7 +141,8 @@ class MachineC(Machine):
     batchsize = 20
 
     def production_duration(self):
-        return 5  # insert something here
+        # One exponential with an average of 10 seconds, plus another exponential with an average of 6 seconds, plus 3 minutes.
+        return exp(1 / 10) + exp(1 / 6) + 3*60  # insert something here
 
     def lifetime_duration(self):
         return -1  # This crashes every 3% of the DVD's
@@ -157,7 +159,7 @@ class MachineD(Machine):
         self.next_dif_replace_ink = self.ink_replace_nr()
 
     def production_duration(self):
-        return choice(samplesD)
+        return interpolate_samples(samplesD)
 
     def lifetime_duration(self):
         return -1  # This machine doesnt break like that, it sometimes loses a DVD and just has to start over
@@ -190,6 +192,12 @@ class MachineD(Machine):
             return 198
         return 202
 
+
+def interpolate_samples(samples):
+    # Assumes samples to be sorted in ascending order
+    i = randint(0, len(samples) - 2)
+    r = random()
+    return samples[i] + r * (samples[i + 1] - samples[i])
 
 if __name__ == '__main__':
     import gui

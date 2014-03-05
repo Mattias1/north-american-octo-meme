@@ -81,6 +81,7 @@ class AssemblyLine(Buffer):
         if self.halted:
             self.factory.schedule(0, self.put_in_crate)
 
+
 if __name__ == '__main__':
     import gui
     print('buffers main')

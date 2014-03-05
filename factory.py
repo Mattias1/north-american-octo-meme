@@ -1,6 +1,7 @@
 """This module contains the factory class"""
 from queue import PriorityQueue
 from machines import MachineA, MachineB, MachineC, MachineD, BROKEN
+from samples import samplesA, samplesB, samplesD
 from buffers import Buffer, AssemblyLine
 from time import sleep
 
@@ -30,6 +31,8 @@ class Factory(PriorityQueue):
     cur_time = 0
     stats = {}
 
+    its_day = True
+
     EOS = False
     running = False
     do_one_step = False
@@ -37,6 +40,10 @@ class Factory(PriorityQueue):
     def __init__(self, repairmen_day, repairmen_night):
         PriorityQueue.__init__(self)
         self.machines = []
+
+        samplesA.sort()
+        samplesB.sort()
+        samplesD.sort()
 
         bufferA12 = Buffer(self, 20)
         bufferA34 = Buffer(self, 20)
@@ -85,6 +92,8 @@ class Factory(PriorityQueue):
     def update_stats(self):
         # Update your own stats
         self.stats['- time'] = self.cur_time
+        self.stats['- available repairmen'] = self.available_repairmen
+        self.stats['- time of day'] = 'day' if self.its_day else 'night'
         temp_list = []
         temp_string = ''
         for _ in range(10):
@@ -117,6 +126,7 @@ class Factory(PriorityQueue):
             event = self.get()
             assert event.time >= self.cur_time
             self.cur_time = event.time
+            self.check_change_day_night()
             event.handler()
 
             # Statistics
@@ -143,6 +153,17 @@ class Factory(PriorityQueue):
                     return
         # If nothing has to be repaired right away, just let the poor guy drink his coffee
         self.available_repairmen += 1
+
+    def check_change_day_night(self):
+        # Assumptions: - At time 0 it is 6 am (start of the day). - A repairman finishes his job before he goes home.
+        nr_half_days = self.cur_time // (12 * 3600)
+        if (nr_half_days % 2 == 0) != self.its_day:
+            self.its_day = not self.its_day
+            if self.its_day:
+                self.available_repairmen += self.repairman_day_night_difference
+            else:
+                # If this is negative, the repairman will finish the job, and go home afterwards
+                self.available_repairmen -= self.repairman_day_night_difference
 
     def schedule(self, time, handler, priority=0):
         assert time >= 0

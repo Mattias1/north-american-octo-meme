@@ -58,7 +58,7 @@ class Machine:
             return
 
         self.status = BORED
-        if self.buffer.storage + self.batchsize <= self.buffer.size:
+        if self.buffer.enough_room(self.batchsize):
             self.buffer.add_product(self.batchsize)
             self.total_produced += 1
             # NOTE: Low priority - must be lower than the one in

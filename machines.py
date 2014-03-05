@@ -13,9 +13,11 @@ from samples import samplesA, samplesB, samplesD
 class Machine:
     """Abstract base class for machines"""
     status = BORED
+    has_discarded = False
     total_produced = 0
-    total_discarded = 0 # TODO
+    total_discarded = 0
     batchsize = 1
+    breakdowns = 0
 
     def __init__(self, factory, buffer):
         self.stats = {}
@@ -31,8 +33,10 @@ class Machine:
 
     def update_stats(self):
         self.stats['status'] = self.status
-        self.stats['total_produced'] = self.total_produced
+        self.stats['total_produced'] = self.total_produced * self.batchsize
+        self.stats['total_discarded'] = self.total_discarded
         self.stats['buffer_storage'] = self.buffer.storage
+        self.stats['breakdowns'] = self.breakdowns
 
     def production_duration(self):
         raise NotImplementedError('Production duration is abstract')
@@ -54,8 +58,9 @@ class Machine:
                 return
 
     def finish_producing(self):
-        # NOTE: If the machine is broken, the current item he's working on is thrown away
-        if self.status != BUSY:
+        # If machine has been broken, the current item is thrown away
+        if self.has_discarded:
+            self.has_discarded = False
             return
 
         self.status = BORED
@@ -68,6 +73,11 @@ class Machine:
 
     def start_repair(self):
         """In the case of a breakdown, try to start repairing."""
+        self.breakdowns += 1
+        if self.status == BUSY:
+            self.total_discarded += 1
+            self.has_discarded = True
+
         if False:
             self.status = REPAIRING_DOUBLE  # Not sure right now
         if self.factory.available_repairmen > 0:
@@ -104,7 +114,6 @@ class MachineA(Machine):
         self.factory.schedule(self.production_duration(), self.finish_producing)
 
     def production_duration(self):
-        # TODO: don't use samples, but interpolate between the sorted list of samples
         return interpolate_samples(samplesA)
 
     def lifetime_duration(self):
@@ -132,6 +141,7 @@ class MachineB(Machine):
         # Discard DVD in 2% of the cases
         if randint(1, 100) <= 2:
             self.status = BORED
+            self.total_discarded += 1
             self.factory.schedule(0, self.start_producing)
             return
         super().finish_producing()
@@ -141,7 +151,8 @@ class MachineC(Machine):
     batchsize = 20
 
     def production_duration(self):
-        # One exponential with an average of 10 seconds, plus another exponential with an average of 6 seconds, plus 3 minutes.
+        # One exponential with an average of 10 seconds,
+        # plus another exponential with an average of 6 seconds, plus 3 minutes.
         return exp(1 / 10) + exp(1 / 6) + 3*60  # insert something here
 
     def lifetime_duration(self):
@@ -149,6 +160,13 @@ class MachineC(Machine):
 
     def repair_duration(self):
         return 5 * 60  # 5 minutes exactly
+
+    def finish_producing(self):
+        super().finish_producing()
+        # Cleaning after producion of 3% of the DVD's
+        if randint(1, 100) <= 3:
+            # Priority must be higher than the start producing scheduled in the super.finish_producing
+            self.factory.schedule(0, self.start_repair, 9)
 
 
 class MachineD(Machine):
@@ -170,7 +188,6 @@ class MachineD(Machine):
 
     def finish_producing(self):
         super().finish_producing()
-        dif = self.total_produced - self.last_produced_count_replace_ink
         if self.total_produced - self.last_produced_count_replace_ink == self.next_dif_replace_ink:
             # Priority must be higher than the start producing scheduled in the super.finish_producing
             self.factory.schedule(0, self.start_repair, 9)
@@ -180,7 +197,8 @@ class MachineD(Machine):
         self.last_produced_count_replace_ink = self.total_produced
         self.next_dif_replace_ink = self.ink_replace_nr()
 
-    def ink_replace_nr(self):
+    @staticmethod
+    def ink_replace_nr():
         p = randint(1, 100)
         if p <= 40:
             return 200

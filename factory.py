@@ -54,8 +54,8 @@ class Factory(PriorityQueue):
         bufferA12.providers = [machineA1, machineA2]
         bufferA34.providers = [machineA3, machineA4]
 
-        bufferB1 = AssemblyLine(self, 20)  # TODO Assembly line
-        bufferB2 = AssemblyLine(self, 20)  # TODO Assembly line
+        bufferB1 = AssemblyLine(self, 20)  # Assembly line
+        bufferB2 = AssemblyLine(self, 20)  # Assembly line
         machineB1 = MachineB(self, bufferB1)
         machineB2 = MachineB(self, bufferB2)
         machineB1.providers = [bufferA12, bufferA34]
@@ -78,10 +78,10 @@ class Factory(PriorityQueue):
 
         machineD1 = MachineD(self)
         machineD2 = MachineD(self)
-        machineD1.providers = [bufferC1]
-        machineD2.providers = [bufferC2]
-        bufferC1.receivers = [machineD1]
-        bufferC2.receivers = [machineD2]
+        machineD1.providers = [bufferC1, bufferC2]
+        machineD2.providers = [bufferC1, bufferC2]
+        bufferC1.receivers = [machineD1, machineD2]
+        bufferC2.receivers = [machineD1, machineD2]
 
         self.machines = [machineA1, machineA2, machineA3, machineA4, machineB1,
                          machineB2, machineC1, machineC2, machineD1, machineD2]

@@ -47,23 +47,26 @@
             \item Printing and finishing 
         \end{enumerate}
         The machines have limited buffer space, and step C is done with batch processing.
+        Machines can break down, possibly causing them to be out of production for a while,
+        and discarding DVD's they were producing. Also some machines need cleaning or replacing of ink.
+        These problems are solved by repairmen, working in shifts.
 
     \section{Assumptions}
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-        no sea takimata sanctus est Lorem ipsum dolor sit amet.
-
+        These are some of our assumptoins:
+        \begin{enumerate}
+            \item 
+                Machine A discards any DVD's that is being produced at the event of a breakdown.
+            \item 
+                Machines C and D are expected to start with cleaning or ink replacing after the (batch of) DVD's is finished.
+        \end{enumerate}
 
     \section{Analysis of the problem}
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-        no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        We want to solve this problem by perfomring a simulation study. % ???
         
 
     \section{The model}
-        The event graph bla bla bla
+    \subsection{The eventgraph}
+        This is a part of our event graph (without the breakdowns).
         \begin{figure}[H]
             \centering
             \begin{tikzpicture}[auto,swap]
@@ -105,6 +108,15 @@
             \end{tikzpicture}
             \caption{The eventgraph of the simulation.}\label{fig:event-graph}
         \end{figure}
+
+        \subsection{The event handlers}
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+            tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+        \subsection{Performance measures}
+            vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+        \subsection{State}
+            no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        
     
 
     \section{Input analysis}
@@ -115,8 +127,11 @@
 
 
     \section{Experiments}
+    \subsection{Set up}
         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
         tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+
+    \subsection{Results}
         vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
         no sea takimata sanctus est Lorem ipsum dolor sit amet.
     

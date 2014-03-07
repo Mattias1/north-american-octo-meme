@@ -55,7 +55,7 @@ class Application(Frame):
 
     def new(self):
         self.stop()
-        self.factory = Factory(10, 7)
+        self.factory = Factory(10, 7) # TODO: There was something about the 10 or 11 and 7 or 8
         self.running = True
         sim_thread = Thread(target=self.factory.start)
         stats_thread = Thread(target=self.print_stats)
@@ -95,7 +95,7 @@ class Application(Frame):
                     if mtype == machine.__class__:
                         text = [mtype.__name__ + ':']
                         for key, value in machine.stats.items():
-                            text.append(key + ': ' + str(value))
+                            text.append(' {}: {}'.format(key, value))
                         messages.append('\n'.join(text))
                 mlabels[i].config(text='\n\n'.join(messages))
 

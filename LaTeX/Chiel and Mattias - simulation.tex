@@ -1,7 +1,7 @@
 \documentclass{article}
 
-\title{Simulation - Modeling assignment}
-\author{Mattias Beimers (3672565)}
+\title{Simulation assignment}
+\author{Chiel ten Brinke (3677133) and Mattias Beimers (3672565)}
 \date{\vspace{-3ex}}
 
 \usepackage{amsmath}
@@ -12,6 +12,7 @@
 \usepackage{tikz}
 \usepackage{float}
 \usepackage[margin=1.75in]{geometry}
+\usepackage[parfill]{parskip}
 
 \usetikzlibrary{arrows,shapes,decorations.pathmorphing}
 
@@ -34,11 +35,35 @@
     \maketitle
 
     
-    \section{Event Graph}
+    \section{Problem description}
+        We present a simulation study for the buffer- and batch-size design of a production line of DVD's.
+        Moreover, we analyze improvements for the line, by, among others, finding the best buffer- and bacth-sizes and alleviating the impact of bottlenecks.
+
+        The production process of DVD's consists of the following steps:
+        \begin{enumerate}[A.]
+            \item Injection molding
+            \item Dye coating and drying
+            \item Sputtering, lacquer coating, drying
+            \item Printing and finishing 
+        \end{enumerate}
+        The machines have limited buffer space, and step C is done with batch processing.
+
+    \section{Assumptions}
         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
         tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
         vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-        no sea takimata Figure \ref{fig:event-graph} sanctus est Lorem ipsum dolor sit amet.
+        no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+    \section{Analysis of the problem}
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+        no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        
+
+    \section{The model}
+        The event graph bla bla bla
         \begin{figure}[H]
             \centering
             \begin{tikzpicture}[auto,swap]
@@ -80,6 +105,34 @@
             \end{tikzpicture}
             \caption{The eventgraph of the simulation.}\label{fig:event-graph}
         \end{figure}
+    
 
+    \section{Input analysis}
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+        no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+    \section{Experiments}
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+        no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    
+    
+    \section{Conclusions}
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+        no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    
+
+    \section{Appendix}
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+        no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    
 
 \end{document}

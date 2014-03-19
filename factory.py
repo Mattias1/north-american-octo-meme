@@ -47,39 +47,33 @@ class Factory(PriorityQueue):
 
         bufferA12 = Buffer(self, 20)
         bufferA34 = Buffer(self, 20)
-        machineA1 = MachineA(self, bufferA12)
-        machineA2 = MachineA(self, bufferA12)
-        machineA3 = MachineA(self, bufferA34)
-        machineA4 = MachineA(self, bufferA34)
+        machineA1 = MachineA(self, [bufferA12])
+        machineA2 = MachineA(self, [bufferA12])
+        machineA3 = MachineA(self, [bufferA34])
+        machineA4 = MachineA(self, [bufferA34])
         bufferA12.providers = [machineA1, machineA2]
         bufferA34.providers = [machineA3, machineA4]
 
         bufferB1 = AssemblyLine(self, 20)  # Assembly line
         bufferB2 = AssemblyLine(self, 20)  # Assembly line
-        machineB1 = MachineB(self, bufferB1)
-        machineB2 = MachineB(self, bufferB2)
-        machineB1.providers = [bufferA12, bufferA34]
-        machineB2.providers = [bufferA12, bufferA34]
-        bufferA12.receivers = [machineB1, machineB2]# TODO: not crosswise
-        bufferA34.receivers = [machineB1, machineB2]
+        machineB1 = MachineB(self, [bufferA12], [bufferB1])
+        machineB2 = MachineB(self, [bufferA34], [bufferB2])
+        bufferA12.receivers = [machineB1] # Done: not crosswise
+        bufferA34.receivers = [machineB2]
         bufferB1.providers = [machineB1]  # Assembly line
         bufferB2.providers = [machineB2]  # Assembly line
 
         bufferC1 = Buffer(self, 20)
         bufferC2 = Buffer(self, 20)
-        machineC1 = MachineC(self, bufferC1)
-        machineC2 = MachineC(self, bufferC2)
-        machineC1.providers = [bufferB1]
-        machineC2.providers = [bufferB2]
-        bufferB1.receivers = [machineC1]  # Assembly line TODO crosswise deliveries
-        bufferB2.receivers = [machineC2]  # Assembly line
+        machineC1 = MachineC(self, [bufferB1, bufferB2], [bufferC1, bufferC2])
+        machineC2 = MachineC(self, [bufferB1, bufferB2], [bufferC1, bufferC2])
+        bufferB1.receivers = [machineC1, machineC2]  # Assembly line Done: crosswise deliveries
+        bufferB2.receivers = [machineC1, machineC2]  # Assembly line
         bufferC1.providers = [machineC1]
         bufferC2.providers = [machineC2]
 
-        machineD1 = MachineD(self)
-        machineD2 = MachineD(self)
-        machineD1.providers = [bufferC1, bufferC2] # TODO: crosswise delivery from machine C to crates, single file delivery from crate to machine D
-        machineD2.providers = [bufferC1, bufferC2]
+        machineD1 = MachineD(self, [bufferC1])
+        machineD2 = MachineD(self, [bufferC2])
         bufferC1.receivers = [machineD1, machineD2]
         bufferC2.receivers = [machineD1, machineD2]
 

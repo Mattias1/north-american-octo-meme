@@ -19,13 +19,11 @@ class Machine:
     batchsize = 1
     breakdowns = 0
 
-    def __init__(self, factory, buffer):
+    def __init__(self, factory, providers, receivers):
         self.stats = {}
-        self.providers = []
+        self.providers = providers
+        self.receivers = receivers
         self.factory = factory
-        self.buffer = buffer
-        self.stats = {}
-        self.providers = []
 
         duration = self.lifetime_duration()
         if duration != -1:
@@ -35,7 +33,7 @@ class Machine:
         self.stats['status'] = self.status
         self.stats['total_produced'] = self.total_produced * self.batchsize
         self.stats['total_discarded'] = self.total_discarded
-        self.stats['buffer_storage'] = self.buffer.storage
+        self.stats['receivers_storage'] = sum([r.storage for r in self.receivers])
         self.stats['breakdowns'] = self.breakdowns
 
     def production_duration(self):
@@ -64,12 +62,14 @@ class Machine:
             return
 
         self.status = BORED
-        if self.buffer.enough_room(self.batchsize):
-            self.buffer.add_product(self.batchsize)
-            self.total_produced += 1
-            # NOTE: Low priority - must be lower than the one in
-            # MachineC.finish_producing and machineD.finish_producing
-            self.factory.schedule(0, self.start_producing, 0)
+        for buffer in self.receivers:
+            if buffer.enough_room(self.batchsize):
+                buffer.add_product(self.batchsize)
+                self.total_produced += 1
+                # NOTE: Low priority - must be lower than the one in
+                # MachineC.finish_producing and machineD.finish_producing
+                self.factory.schedule(0, self.start_producing, 0)
+                return
 
     def start_repair(self):
         """In the case of a breakdown, try to start repairing."""
@@ -108,6 +108,9 @@ class Machine:
 # Actual instances of the Machine base class
 #
 class MachineA(Machine):
+    def __init__(self, factory, receivers):
+        Machine.__init__(self, factory, [], receivers)
+
     def start_producing(self):
         # MachineA has no providers
         self.status = BUSY
@@ -170,9 +173,9 @@ class MachineC(Machine):
 
 
 class MachineD(Machine):
-    def __init__(self, factory):
-        buffer = Buffer(factory, float('inf'))
-        Machine.__init__(self, factory, buffer)
+    def __init__(self, factory, providers):
+        buffer = Buffer(self, float('inf'))
+        Machine.__init__(self, factory, providers, [buffer])
         self.last_produced_count_replace_ink = self.total_produced
         self.next_dif_replace_ink = self.ink_replace_nr()
 

@@ -60,7 +60,7 @@ class Factory(PriorityQueue):
         machineB2 = MachineB(self, bufferB2)
         machineB1.providers = [bufferA12, bufferA34]
         machineB2.providers = [bufferA12, bufferA34]
-        bufferA12.receivers = [machineB1, machineB2]
+        bufferA12.receivers = [machineB1, machineB2]# TODO: not crosswise
         bufferA34.receivers = [machineB1, machineB2]
         bufferB1.providers = [machineB1]  # Assembly line
         bufferB2.providers = [machineB2]  # Assembly line
@@ -71,14 +71,14 @@ class Factory(PriorityQueue):
         machineC2 = MachineC(self, bufferC2)
         machineC1.providers = [bufferB1]
         machineC2.providers = [bufferB2]
-        bufferB1.receivers = [machineC1]  # Assembly line
+        bufferB1.receivers = [machineC1]  # Assembly line TODO crosswise deliveries
         bufferB2.receivers = [machineC2]  # Assembly line
         bufferC1.providers = [machineC1]
         bufferC2.providers = [machineC2]
 
         machineD1 = MachineD(self)
         machineD2 = MachineD(self)
-        machineD1.providers = [bufferC1, bufferC2]
+        machineD1.providers = [bufferC1, bufferC2] # TODO: crosswise delivery from machine C to crates, single file delivery from crate to machine D
         machineD2.providers = [bufferC1, bufferC2]
         bufferC1.receivers = [machineD1, machineD2]
         bufferC2.receivers = [machineD1, machineD2]

@@ -21,7 +21,7 @@ class Application(Frame):
         padding = {'padx': 5, 'pady': 5}
         self.pack(anchor=NW, fill=X, expand=1, **padding)
 
-        # The frame for all the buttons
+        # The frame for all the buttons, and the buttons themselves
         control_frame = Frame(self, relief=RAISED, borderwidth=1)
         control_frame.pack(anchor=N)
         btn = Button(control_frame, text="New", command=self.new)
@@ -37,10 +37,16 @@ class Application(Frame):
         btn = Button(control_frame, text="Exit", command=self.exit)
         btn.pack(anchor=NW, side=LEFT, **padding)
 
-        # The machine stats
+        # The frame for the machine stats (and now also for tthe factory stats)
         stat_frame = Frame(self)
         stat_frame.pack(anchor=NW, fill=BOTH, expand=1)
-        self.machinesA = Label(stat_frame, text='A')
+
+        # The factory stats
+        self.output = Label(stat_frame, text=self.facstr())
+        self.output.pack(anchor=NW, side=LEFT, **padding)
+
+        # The machine stats
+        self.machinesA = Label(stat_frame, text='Machine statistics:     A')
         self.machinesA.pack(anchor=NW, side=LEFT, **padding)
         self.machinesB = Label(stat_frame, text='B')
         self.machinesB.pack(anchor=NW, side=LEFT, **padding)
@@ -48,10 +54,6 @@ class Application(Frame):
         self.machinesC.pack(anchor=NW, side=LEFT, **padding)
         self.machinesD = Label(stat_frame, text='D')
         self.machinesD.pack(anchor=NW, side=LEFT, **padding)
-
-        # The factory stats
-        self.output = Label(text='Here comes the stats')
-        self.output.pack(anchor=NW, side=LEFT, **padding)
 
     def new(self):
         self.stop()
@@ -100,7 +102,7 @@ class Application(Frame):
                 mlabels[i].config(text='\n\n'.join(messages))
 
             # Factory
-            messages = ['STATS:']
+            messages = [self.facstr()]
             for key, value in self.factory.stats.items():
                 messages.append(key + ': ' + str(value))
             self.write('\n'.join(messages))
@@ -110,11 +112,15 @@ class Application(Frame):
     def write(self, message):
         self.output.config(text=message)
 
+    @staticmethod
+    def facstr():
+        return 'Factory statistics:' + ''.join([' ' for _ in range(75)])
+
 
 def main():
     """The main entrypoint for this application"""
     root = Tk()
-    root.geometry("750x600")
+    root.geometry("910x500")
     app = Application(master=root)
     app.mainloop()
 

@@ -8,6 +8,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{enumerate}
+\usepackage{caption}
 \usepackage{subcaption}
 \usepackage{tikz}
 \usepackage{float}
@@ -26,138 +27,138 @@
 \newtheorem{lemma}{Lemma}[section]
 
 \begin{document}
-    \tikzstyle{vertex}=[circle,very thick,draw=black,fill=black!25,minimum size=35pt,inner sep=2pt,align=center,text width=30pt,font=\tiny]
-    \tikzstyle{fakeVertex}=[circle,minimum size=1pt,inner sep=0pt]
-    \tikzstyle{edge} = [draw,thick,-]
-    \tikzstyle{arc} = [draw,thick,->]
-    \tikzstyle{weight} = [font=\small]
+\tikzstyle{vertex}=[circle,very thick,draw=black,fill=black!25,minimum size=35pt,inner sep=2pt,align=center,text width=30pt,font=\tiny]
+\tikzstyle{fakeVertex}=[circle,minimum size=1pt,inner sep=0pt]
+\tikzstyle{edge} = [draw,thick,-]
+\tikzstyle{arc} = [draw,thick,->]
+\tikzstyle{weight} = [font=\small]
 
-    \maketitle
-
-    
-    \section{Problem description}
-        We present a simulation study for the buffer- and batch-size design of a production line of DVD's.
-        Moreover, we analyze improvements for the line, by, among others, finding the best buffer- and bacth-sizes and alleviating the impact of bottlenecks.
-
-        The production process of DVD's consists of the following steps:
-        \begin{enumerate}[A.]
-            \item Injection molding
-            \item Dye coating and drying
-            \item Sputtering, lacquer coating, drying
-            \item Printing and finishing 
-        \end{enumerate}
-        The machines have limited buffer space, and step C is done with batch processing.
-        Machines can break down, possibly causing them to be out of production for a while,
-        and discarding DVD's they were producing. Also some machines need cleaning or replacing of ink.
-        These problems are solved by repairmen, working in shifts.
-
-    \section{Assumptions}
-        These are some of our assumptoins:
-        \begin{enumerate}
-            \item 
-                Machine A discards any DVD's that is being produced at the event of a breakdown.
-            \item 
-                Machines C and D are expected to start with cleaning or ink replacing after the (batch of) DVD's is finished.
-        \end{enumerate}
-
-    \section{Analysis of the problem}
-        We want to solve this problem by perfomring a simulation study. % ???
-        
-
-    \section{The model}
-    \subsection{The eventgraph}
-        This is a part of our event graph (without the breakdowns).
-        \begin{figure}[H]
-            \centering
-            \begin{tikzpicture}[auto,swap]
-                % The machine start and finish events
-                \node[vertex] (sA) at (-2,0) {Machine A start};
-                \node[vertex] (fA) at (1,0) {Machine A finish};
-                \node[vertex] (sB) at (-2,-2) {Machine B start};
-                \node[vertex] (fB) at (1,-2) {Machine B finish};
-                \node[vertex] (sC) at (-2,-4) {Machine C start};
-                \node[vertex] (fC) at (1,-4) {Machine C finish};
-                \node[vertex] (sD) at (-2,-6) {Machine D start};
-                \node[vertex] (fD) at (1,-6) {Machine D finish};
-
-                % Buffer events
-                \node[vertex] (assambly) at (2.4,-5) {Put in crate};
-
-                % The breakdown events
-                \node[vertex] (rsA) at (2.5,-1) {Machine A starts repairing};
-                \node[vertex] (rfA) at (4.5,-1) {Machine A finishes repairing};
-
-                % The start- and end- of simulation events
-                \node[fakeVertex] (sos) at (-2.5,-1) {};
-                \node[fakeVertex] (sos2) at (2.5,-6.5) {};
-                \node[vertex] (eos) at (3,-5.5) {End of sim};
-
-                % We have events for add_to_buffer and remove_from_buffer (or something like that)
-
-                \path[arc] (sA) to (fA);
-                \path[arc,dashed] (fA) to (sB);
-                \path[arc] (sB) to (fB);
-                \path[arc,dashed] (fB) to (sC);
-                \path[arc] (sC) to (fC);
-                \path[arc,dashed] (fC) to (sD);
-                \path[arc] (sD) to (fD);
-                %\path[arc] (fD) to (eos);
-
-                \path[draw,thick,->, line join=round, decorate, decoration={
-                        zigzag,
-                        segment length=8,
-                        amplitude=1,post=lineto,
-                        post length=2pt
-                    }]  (sos) -- (sA);
-                \path[draw,thick,->, line join=round, decorate, decoration={
-                        zigzag,
-                        segment length=8,
-                        amplitude=1,post=lineto,
-                        post length=2pt
-                    }]  (sos2) -- (eos);
-            \end{tikzpicture}
-            \caption{The eventgraph of the simulation.}\label{fig:event-graph}
-        \end{figure}
-
-        \subsection{The event handlers}
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-            tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-        \subsection{Performance measures}
-            vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-        \subsection{State}
-            no sea takimata sanctus est Lorem ipsum dolor sit amet.
-        
-    
-
-    \section{Input analysis}
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-        no sea takimata sanctus est Lorem ipsum dolor sit amet.
+\maketitle
 
 
-    \section{Experiments}
-    \subsection{Set up}
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+\section{Problem description}
+We present a simulation study for the buffer- and batch-size design of a production line of DVD's.
+Moreover, we analyze improvements for the line, by, among others, finding the best buffer- and bacth-sizes and alleviating the impact of bottlenecks.
 
-    \subsection{Results}
-        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-        no sea takimata sanctus est Lorem ipsum dolor sit amet.
-    
-    
-    \section{Conclusions}
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-        no sea takimata sanctus est Lorem ipsum dolor sit amet.
-    
+The production process of DVD's consists of the following steps:
+\begin{enumerate}[A.]
+    \item Injection molding
+    \item Dye coating and drying
+    \item Sputtering, lacquer coating, drying
+    \item Printing and finishing 
+\end{enumerate}
+The machines have limited buffer space, and step C is done with batch processing.
+Machines can break down, possibly causing them to be out of production for a while,
+and discarding DVD's they were producing. Also some machines need cleaning or replacing of ink.
+These problems are solved by repairmen, working in shifts.
 
-    \section{Appendix}
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-        no sea takimata sanctus est Lorem ipsum dolor sit amet.
-    
+\section{Assumptions}
+These are some of our assumptoins:
+\begin{enumerate}
+    \item 
+        Machine A discards any DVD's that is being produced at the event of a breakdown.
+    \item 
+        Machines C and D are expected to start with cleaning or ink replacing after the (batch of) DVD's is finished.
+\end{enumerate}
+
+\section{Analysis of the problem}
+We want to solve this problem by perfomring a simulation study. % ???
+
+
+\section{The model}
+\subsection{The eventgraph}
+This is a part of our event graph (without the breakdowns).
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[auto,swap]
+        % The machine start and finish events
+        \node[vertex] (sA) at (-2,0) {Machine A start};
+        \node[vertex] (fA) at (1,0) {Machine A finish};
+        \node[vertex] (sB) at (-2,-2) {Machine B start};
+        \node[vertex] (fB) at (1,-2) {Machine B finish};
+        \node[vertex] (sC) at (-2,-4) {Machine C start};
+        \node[vertex] (fC) at (1,-4) {Machine C finish};
+        \node[vertex] (sD) at (-2,-6) {Machine D start};
+        \node[vertex] (fD) at (1,-6) {Machine D finish};
+
+        % Buffer events
+        \node[vertex] (assambly) at (2.4,-5) {Put in crate};
+
+        % The breakdown events
+        \node[vertex] (rsA) at (2.5,-1) {Machine A starts repairing};
+        \node[vertex] (rfA) at (4.5,-1) {Machine A finishes repairing};
+
+        % The start- and end- of simulation events
+        \node[fakeVertex] (sos) at (-2.5,-1) {};
+        \node[fakeVertex] (sos2) at (2.5,-6.5) {};
+        \node[vertex] (eos) at (3,-5.5) {End of sim};
+
+        % We have events for add_to_buffer and remove_from_buffer (or something like that)
+
+        \path[arc] (sA) to (fA);
+        \path[arc,dashed] (fA) to (sB);
+        \path[arc] (sB) to (fB);
+        \path[arc,dashed] (fB) to (sC);
+        \path[arc] (sC) to (fC);
+        \path[arc,dashed] (fC) to (sD);
+        \path[arc] (sD) to (fD);
+        %\path[arc] (fD) to (eos);
+
+        \path[draw,thick,->, line join=round, decorate, decoration={
+                zigzag,
+                segment length=8,
+                amplitude=1,post=lineto,
+                post length=2pt
+        }]  (sos) -- (sA);
+        \path[draw,thick,->, line join=round, decorate, decoration={
+                zigzag,
+                segment length=8,
+                amplitude=1,post=lineto,
+                post length=2pt
+        }]  (sos2) -- (eos);
+    \end{tikzpicture}
+    \caption{The eventgraph of the simulation.}\label{fig:event-graph}
+\end{figure}
+
+\subsection{The event handlers}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+\subsection{Performance measures}
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+\subsection{State}
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+
+\section{Input analysis}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+\section{Experiments}
+\subsection{Set up}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+
+\subsection{Results}
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+\section{Conclusions}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+\section{Appendix}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
 
 \end{document}

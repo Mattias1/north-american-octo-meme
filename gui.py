@@ -6,6 +6,7 @@ from time import sleep
 from factory import Factory
 import machines
 
+
 class Application(Frame):
     running = False
 
@@ -57,7 +58,7 @@ class Application(Frame):
 
     def new(self):
         self.stop()
-        self.factory = Factory(10, 7) # TODO: There was something about the 10 or 11 and 7 or 8
+        self.factory = Factory(10, 7)  # TODO: There was something about the 10 or 11 and 7 or 8
         self.running = True
         sim_thread = Thread(target=self.factory.start)
         stats_thread = Thread(target=self.print_stats)
@@ -99,7 +100,7 @@ class Application(Frame):
                         for key, value in machine.stats.items():
                             text.append(' {}: {}'.format(key, value))
                         messages.append('\n'.join(text))
-                mlabels[i].config(text='\n\n'.join(messages))
+                mlabels[i].config(font=("Arial", 10), text='\n\n'.join(messages))
 
             # Factory
             messages = [self.facstr()]
@@ -110,7 +111,7 @@ class Application(Frame):
             sleep(1 / self.refresh_rate)
 
     def write(self, message):
-        self.output.config(text=message)
+        self.output.config(font=("Arial", 10), text=message)
 
     @staticmethod
     def facstr():

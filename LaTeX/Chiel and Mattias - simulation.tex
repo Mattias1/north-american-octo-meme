@@ -8,6 +8,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{enumerate}
+\usepackage{caption}
 \usepackage{subcaption}
 \usepackage{tikz}
 \usepackage{float}
@@ -81,19 +82,23 @@
                 \node[vertex] (fD) at (1,-6) {Machine D finish};
 
                 % Buffer events
-                \node[vertex] (assambly) at (2.4,-5) {Put in crate};
+                \node[vertex] (assambly) at (-0.5,-3) {Put in crate};
 
                 % The breakdown events
-                \node[vertex] (rsA) at (2.5,-1) {Machine A starts repairing};
-                \node[vertex] (rfA) at (4.5,-1) {Machine A finishes repairing};
+                \node[fakeVertex] (sos3) at (-1,1) {};
+                \node[vertex] (rsA) at (-0.5,2) {Machine A starts repairing};
+                \node[vertex] (rfA) at (-4.5,1) {Machine A finishes repairing};
+                \node[vertex] (rfC) at (3,-5) {Machine C finishes cleaning};
+                \node[vertex] (rfD) at (3,-7) {Machine D finishes ink replacing};
 
                 % The start- and end- of simulation events
-                \node[fakeVertex] (sos) at (-2.5,-1) {};
-                \node[fakeVertex] (sos2) at (2.5,-6.5) {};
-                \node[vertex] (eos) at (3,-5.5) {End of sim};
+                \node[fakeVertex] (sos1) at (-2.5,-1) {};
+                \node[fakeVertex] (sos2) at (4.5,-6.5) {};
+                \node[vertex] (eos) at (5,-5.5) {End of sim};
 
                 % We have events for add_to_buffer and remove_from_buffer (or something like that)
 
+                % Arcs for machine start and finish events
                 \path[arc] (sA) to (fA);
                 \path[arc,dashed] (fA) to (sB);
                 \path[arc] (sB) to (fB);
@@ -103,18 +108,33 @@
                 \path[arc] (sD) to (fD);
                 %\path[arc] (fD) to (eos);
 
+                % Arcs for breakdown events
+                \path[arc,bend left=25] (rsA) to (rfA);
+                \path[arc,bend left=25] (rfA) to (rsA);
+                \path[arc] (rfA) to (sA);
+                \path[arc] (fC) to (rfC);
+                \path[arc,dashed] (rfC) to (sD);
+                \path[arc] (fD) to (rfD);
+
+                % Start of sim arcs
                 \path[draw,thick,->, line join=round, decorate, decoration={
                         zigzag,
                         segment length=8,
                         amplitude=1,post=lineto,
                         post length=2pt
-                    }]  (sos) -- (sA);
+                    }]  (sos1) -- (sA);
                 \path[draw,thick,->, line join=round, decorate, decoration={
                         zigzag,
                         segment length=8,
                         amplitude=1,post=lineto,
                         post length=2pt
                     }]  (sos2) -- (eos);
+                \path[draw,thick,->, line join=round, decorate, decoration={
+                        zigzag,
+                        segment length=8,
+                        amplitude=1,post=lineto,
+                        post length=2pt
+                    }]  (sos3) -- (rsA);
             \end{tikzpicture}
             \caption{The eventgraph of the simulation.}\label{fig:event-graph}
         \end{figure}

@@ -70,35 +70,45 @@
         \begin{figure}[H]
             \centering
             \begin{tikzpicture}[auto,swap]
-                \node[vertex] (s1) at (-2,0) {Machine 1 start};
-                \node[vertex] (f1) at (1,0) {Machine 1 finish};
-                \node[vertex] (s2) at (-2,-2) {Machine 2 start};
-                \node[vertex] (f2) at (1,-2) {Machine 2 finish};
-                \node[vertex] (s3) at (-2,-4) {Machine 3 start};
-                \node[vertex] (f3) at (1,-4) {Machine 3 finish};
-                \node[vertex] (s4) at (-2,-6) {Machine 4 start};
-                \node[vertex] (f4) at (1,-6) {Machine 4 finish};
+                % The machine start and finish events
+                \node[vertex] (sA) at (-2,0) {Machine A start};
+                \node[vertex] (fA) at (1,0) {Machine A finish};
+                \node[vertex] (sB) at (-2,-2) {Machine B start};
+                \node[vertex] (fB) at (1,-2) {Machine B finish};
+                \node[vertex] (sC) at (-2,-4) {Machine C start};
+                \node[vertex] (fC) at (1,-4) {Machine C finish};
+                \node[vertex] (sD) at (-2,-6) {Machine D start};
+                \node[vertex] (fD) at (1,-6) {Machine D finish};
+
+                % Buffer events
+                \node[vertex] (assambly) at (2.4,-5) {Put in crate};
+
+                % The breakdown events
+                \node[vertex] (rsA) at (2.5,-1) {Machine A starts repairing};
+                \node[vertex] (rfA) at (4.5,-1) {Machine A finishes repairing};
+
+                % The start- and end- of simulation events
                 \node[fakeVertex] (sos) at (-2.5,-1) {};
                 \node[fakeVertex] (sos2) at (2.5,-6.5) {};
                 \node[vertex] (eos) at (3,-5.5) {End of sim};
 
                 % We have events for add_to_buffer and remove_from_buffer (or something like that)
 
-                \path[arc] (s1) to (f1);
-                \path[arc,dashed] (f1) to (s2);
-                \path[arc] (s2) to (f2);
-                \path[arc,dashed] (f2) to (s3);
-                \path[arc] (s3) to (f3);
-                \path[arc,dashed] (f3) to (s4);
-                \path[arc] (s4) to (f4);
-                \path[arc] (f4) to (eos);
+                \path[arc] (sA) to (fA);
+                \path[arc,dashed] (fA) to (sB);
+                \path[arc] (sB) to (fB);
+                \path[arc,dashed] (fB) to (sC);
+                \path[arc] (sC) to (fC);
+                \path[arc,dashed] (fC) to (sD);
+                \path[arc] (sD) to (fD);
+                %\path[arc] (fD) to (eos);
 
                 \path[draw,thick,->, line join=round, decorate, decoration={
                         zigzag,
                         segment length=8,
                         amplitude=1,post=lineto,
                         post length=2pt
-                    }]  (sos) -- (s1);
+                    }]  (sos) -- (sA);
                 \path[draw,thick,->, line join=round, decorate, decoration={
                         zigzag,
                         segment length=8,

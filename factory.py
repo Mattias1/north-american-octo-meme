@@ -96,7 +96,7 @@ class Factory(PriorityQueue):
         self.stats['- time of day'] = 'day' if self.its_day else 'night'
         temp_list = []
         temp_string = ''
-        for _ in range(10):
+        for _ in range(15):
             if not self.empty():
                 temp_list.append(self.get())
         for evt in temp_list:

@@ -43,7 +43,7 @@ class Application(Frame):
         stat_frame.pack(anchor=NW, fill=BOTH, expand=1)
 
         # The factory stats
-        self.output = Label(stat_frame, text=self.facstr())
+        self.output = Label(stat_frame, text=self.facstr(), font=("Arial", 10))
         self.output.pack(anchor=NW, side=LEFT, **padding)
 
         # The machine stats
@@ -115,13 +115,13 @@ class Application(Frame):
 
     @staticmethod
     def facstr():
-        return 'Factory statistics:' + ''.join([' ' for _ in range(75)])
+        return 'Factory statistics:' + ''.join([' ' for _ in range(60)])
 
 
 def main():
     """The main entrypoint for this application"""
     root = Tk()
-    root.geometry("910x500")
+    root.geometry("1030x550")
     app = Application(master=root)
     app.mainloop()
 

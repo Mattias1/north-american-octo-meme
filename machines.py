@@ -92,7 +92,7 @@ class Machine:
         # Dismiss the repair guy(s)
         self.factory.add_repairman()
         if self.status == REPAIRING_DOUBLE:
-            self.factory.schedule(0, self.factory.add_repairman)
+            self.factory.add_repairman()
 
         # Give the machine something to do again
         self.status = BORED

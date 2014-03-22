@@ -139,7 +139,8 @@ class Factory(PriorityQueue):
         self.EOS = True
 
     def add_repairman(self):
-        # Check if there is a machine broken right now, and do stuff with it
+        # Check if there is a machine broken right now, and do stuff with it.
+        # Only called from end_repair event.
         if self.available_repairmen == 0:
             for machine in self.machines:
                 if machine.status == BROKEN:

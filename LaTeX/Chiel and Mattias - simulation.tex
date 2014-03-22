@@ -27,11 +27,11 @@
 \newtheorem{lemma}{Lemma}[section]
 
 \begin{document}
-    \tikzstyle{vertex}=[circle,very thick,draw=black,fill=black!25,minimum size=35pt,inner sep=2pt,align=center,text width=30pt,font=\tiny]
+    \tikzstyle{vertex}=[circle,very thick,draw=black,fill=black!25,minimum size=35pt,inner sep=0pt,align=center,text width=30pt,font=\scriptsize]
     \tikzstyle{fakeVertex}=[circle,minimum size=1pt,inner sep=0pt]
     \tikzstyle{edge} = [draw,thick,-]
     \tikzstyle{arc} = [draw,thick,->]
-    \tikzstyle{weight} = [font=\small]
+    \tikzstyle{weight} = [font=\scriptsize]
 
     \maketitle
 
@@ -72,49 +72,63 @@
             \centering
             \begin{tikzpicture}[auto,swap]
                 % The machine start and finish events
-                \node[vertex] (sA) at (-2,0) {Machine A start};
-                \node[vertex] (fA) at (1,0) {Machine A finish};
-                \node[vertex] (sB) at (-2,-2) {Machine B start};
-                \node[vertex] (fB) at (1,-2) {Machine B finish};
-                \node[vertex] (sC) at (-2,-4) {Machine C start};
-                \node[vertex] (fC) at (1,-4) {Machine C finish};
-                \node[vertex] (sD) at (-2,-6) {Machine D start};
-                \node[vertex] (fD) at (1,-6) {Machine D finish};
+                \node[vertex] (sA) at (-2,0) {MA start};
+                \node[vertex] (fA) at (1,0) {MA finish};
+                \node[vertex] (sB) at (-2,-2) {MB start};
+                \node[vertex] (fB) at (1,-2) {MB finish};
+                \node[vertex] (sC) at (-2,-5) {MC start};
+                \node[vertex] (fC) at (1,-5) {MC finish};
+                \node[vertex] (sD) at (-2,-7) {MD start};
+                \node[vertex] (fD) at (1,-7) {MD finish};
 
                 % Buffer events
-                \node[vertex] (assambly) at (-0.5,-3) {Put in crate};
+                \node[vertex] (assembly) at (-0.5,-3.5) {Put in crate};
 
                 % The breakdown events
-                \node[fakeVertex] (sos3) at (-1,1) {};
-                \node[vertex] (rsA) at (-0.5,2) {Machine A starts repairing};
-                \node[vertex] (rfA) at (-4.5,1) {Machine A finishes repairing};
-                \node[vertex] (rfC) at (3,-5) {Machine C finishes cleaning};
-                \node[vertex] (rfD) at (3,-7) {Machine D finishes ink replacing};
+                \node[fakeVertex] (sos3) at (-5,-2.2) {};
+                \node[vertex] (rfA) at (-4,1) {MA finishes repairing};
+                \node[vertex] (rsA) at (-4.5,-1.1) {MA starts repairing};
+                \node[vertex] (rfC) at (-4,-4.6) {MC finishes cleaning};
+                \node[vertex] (rsC) at (-4,-6.6) {MC starts cleaning};
+                \node[vertex] (rfD) at (-0.5,-8.5) {MD finishes ink replacing};
 
                 % The start- and end- of simulation events
                 \node[fakeVertex] (sos1) at (-2.5,-1) {};
-                \node[fakeVertex] (sos2) at (4.5,-6.5) {};
-                \node[vertex] (eos) at (5,-5.5) {End of sim};
-
-                % We have events for add_to_buffer and remove_from_buffer (or something like that)
+                \node[fakeVertex] (sos2) at (3,-7.5) {};
+                \node[vertex] (eos) at (3.5,-6.5) {End of sim};
 
                 % Arcs for machine start and finish events
-                \path[arc] (sA) to (fA);
-                \path[arc,dashed] (fA) to (sB);
-                \path[arc] (sB) to (fB);
-                \path[arc,dashed] (fB) to (sC);
-                \path[arc] (sC) to (fC);
-                \path[arc,dashed] (fC) to (sD);
-                \path[arc] (sD) to (fD);
+                \path[arc,bend left=10] (sA) to (fA);
+                \path[arc,bend left=10,dashed] (fA) to (sA);
+                \path[arc,dashed] (fA) to (sB); % buffer.add_product
+                \path[arc,bend left=10] (sB) to (fB);
+                \path[arc,bend left=10,dashed] (fB) to (sB);
+                \path[arc,bend left=10] (sC) to (fC);
+                \path[arc,bend left=10,dashed] (fC) to (sC);
+                \path[arc,dashed] (fC) to (sD); % buffer.add_product
+                \path[arc,bend left=10] (sD) to (fD);
+                \path[arc,bend left=10,dashed] (fD) to (sD);
                 %\path[arc] (fD) to (eos);
 
+                % Arcs for buffer events
+                \path[arc,dashed] (sB) to (sA); % buffer.remove_product
+                \path[arc,dashed] (fB) to (assembly); % buffer.add_product
+                \path[arc,bend left=90,dashed,radius=30] (assembly) to (assembly);
+                % TODO: RADIUS
+                \path[arc,dashed] (assembly) to (sC); % buffer.add_product
+                \path[arc,dashed] (sC) to (sB); % buffer.remove_product
+                \path[arc,dashed] (sD) to (sC); % buffer.remove_product
+
                 % Arcs for breakdown events
-                \path[arc,bend left=25] (rsA) to (rfA);
-                \path[arc,bend left=25] (rfA) to (rsA);
-                \path[arc] (rfA) to (sA);
-                \path[arc] (fC) to (rfC);
+                \path[arc,bend left=15] (rsA) to (rfA);
+                \path[arc,bend left=15,dashed] (rfA) to (rsA); % factory.add_repairman
+                \path[arc,dashed] (rfA) to (sA);
+                \path[arc,dashed] (fC) to (rsC);
+                \path[arc] (rsC) to (rfC);
+                \path[arc,dashed] (rfC) to (sC);
                 \path[arc,dashed] (rfC) to (sD);
                 \path[arc] (fD) to (rfD);
+                \path[arc,dashed] (rfD) to (sD);
 
                 % Start of sim arcs
                 \path[draw,thick,->, line join=round, decorate, decoration={

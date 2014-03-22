@@ -39,6 +39,8 @@ class Factory(PriorityQueue):
 
     def __init__(self, repairmen_day, repairmen_night):
         PriorityQueue.__init__(self)
+        self.throughputs = []
+
         self.machines = []
 
         samplesA.sort()
@@ -58,7 +60,7 @@ class Factory(PriorityQueue):
         bufferB2 = AssemblyLine(self, 20)  # Assembly line
         machineB1 = MachineB(self, [bufferA12], [bufferB1])
         machineB2 = MachineB(self, [bufferA34], [bufferB2])
-        bufferA12.receivers = [machineB1] # Done: not crosswise
+        bufferA12.receivers = [machineB1]  # Done: not crosswise
         bufferA34.receivers = [machineB2]
         bufferB1.providers = [machineB1]  # Assembly line
         bufferB2.providers = [machineB2]  # Assembly line
@@ -88,6 +90,10 @@ class Factory(PriorityQueue):
         self.stats['- time'] = self.cur_time
         self.stats['- available repairmen'] = self.available_repairmen
         self.stats['- time of day'] = 'day' if self.its_day else 'night'
+        self.stats['- total produced'] = sum([m.total_produced for m in self.machines if isinstance(m, MachineD)])
+        self.stats['- average produced'] = self.stats['- total produced'] / (self.cur_time or 1)
+        self.stats['- average throughput'] = sum(self.throughputs) / float(len(self.throughputs) or 1)
+
         temp_list = []
         temp_string = ''
         for _ in range(15):

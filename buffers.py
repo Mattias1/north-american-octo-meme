@@ -4,21 +4,20 @@ from collections import deque
 
 
 class Buffer:
-    storage = 0
-
     def __init__(self, factory, size):
         self.factory = factory
         assert size > 0
         self.size = size
+        self.storage = []
         self.providers = []
         self.receivers = []
 
     def enough_room(self, amount=1):
-        return self.storage + amount <= self.size
+        return len(self.storage) + amount <= self.size
 
-    def add_product(self, amount=1):
-        if self.storage + amount <= self.size:
-            self.storage += amount
+    def add_product(self, batch):
+        if len(self.storage) + len(batch) <= self.size:
+            self.storage.extend(batch)
             # Since we have a non empty storage, try to activate all receivers
             for machine in self.receivers:
                 if machine.status == BORED:
@@ -27,12 +26,12 @@ class Buffer:
             raise Exception('Buffer overflow.')
 
     def remove_product(self, amount=1):
-        if self.storage >= amount:
-            self.storage -= amount
+        if len(self.storage) >= amount:
             # Since we have a non full storage, try to activate all providers
             for machine in self.providers:
                 if machine.status == BORED:
                     machine.start_producing()
+            return [self.storage.pop() for _ in range(amount)]
         else:
             raise Exception('Buffer underflow.')
 
@@ -43,18 +42,19 @@ class AssemblyLine(Buffer):
     def __init__(self, factory, size):
         super().__init__(factory, size)
         self.line = deque()
+        self.next_batch = []
 
-    def add_product(self, amount=1):
+    def add_product(self, batch):
         if self.enough_room():
-            self.put_on_line()
+            self.put_on_line(batch)
         else:
             raise Exception('Assembly line overflow.')
 
-    def put_on_line(self):
+    def put_on_line(self, batch):
         """Puts product on assembly line."""
-        total_queue_time = sum(self.line)
+        total_queue_time = sum([time for time, batch in self.line])
         assert total_queue_time <= 5
-        self.line.appendleft(5 - total_queue_time)
+        self.line.appendleft((5 - total_queue_time, batch))
         self.halted = False
 
         if len(self.line) == 1:
@@ -62,14 +62,15 @@ class AssemblyLine(Buffer):
 
     def put_in_crate(self):
         """Puts product in crate after assembly line."""
-        if self.storage < self.size:
-            self.storage += 1
+        if len(self.storage) < self.size:
+            self.storage.extend(self.next_batch)
             # Schedule next product on the line
             if len(self.line) > 0:
-                self.factory.schedule(self.line.pop(), self.put_in_crate)
+                time, self.next_batch = self.line.pop()
+                self.factory.schedule(time, self.put_in_crate)
 
             # If we have a full storage, try activate all receivers
-            if self.storage == self.size:
+            if len(self.storage) == self.size:
                 for machine in self.receivers:
                     if machine.status == BORED:
                         self.factory.schedule(0, machine.start_producing)
@@ -77,9 +78,9 @@ class AssemblyLine(Buffer):
             self.halted = True
 
     def remove_product(self, amount=1):
-        super().remove_product(amount)
         if self.halted:
             self.factory.schedule(0, self.put_in_crate)
+        return super().remove_product(amount)
 
 
 if __name__ == '__main__':

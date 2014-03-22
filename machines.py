@@ -24,6 +24,7 @@ class Machine:
         self.providers = providers
         self.receivers = receivers
         self.factory = factory
+        self.batch = []
 
         duration = self.lifetime_duration()
         if duration != -1:
@@ -33,7 +34,7 @@ class Machine:
         self.stats['status'] = self.status
         self.stats['total_produced'] = self.total_produced * self.batchsize
         self.stats['total_discarded'] = self.total_discarded
-        self.stats['receivers_storage'] = sum([r.storage for r in self.receivers])
+        self.stats['receivers_storage'] = sum([len(r.storage) for r in self.receivers])
         self.stats['breakdowns'] = self.breakdowns
 
     def production_duration(self):
@@ -49,8 +50,8 @@ class Machine:
         if self.status != BORED:
             return
         for provider in self.providers:
-            if provider.storage >= self.batchsize:
-                provider.remove_product(self.batchsize)
+            if len(provider.storage) >= self.batchsize:
+                self.batch = provider.remove_product(self.batchsize)
                 self.status = BUSY
                 self.factory.schedule(self.production_duration(), self.finish_producing)
                 return
@@ -59,12 +60,13 @@ class Machine:
         # If machine has been broken, the current item is thrown away
         if self.has_discarded:
             self.has_discarded = False
+            self.batch = []
             return
 
         self.status = BORED
         for buffer in self.receivers:
             if buffer.enough_room(self.batchsize):
-                buffer.add_product(self.batchsize)
+                buffer.add_product(self.batch)
                 self.total_produced += 1
                 # NOTE: Low priority - must be lower than the one in
                 # MachineC.finish_producing and machineD.finish_producing
@@ -115,6 +117,7 @@ class MachineA(Machine):
         # MachineA has no providers
         self.status = BUSY
         self.factory.schedule(self.production_duration(), self.finish_producing)
+        self.batch = [self.factory.cur_time]
 
     def production_duration(self):
         return interpolate_samples(samplesA)
@@ -190,7 +193,9 @@ class MachineD(Machine):
         return normal(15 * 60, 1 * 60)
 
     def finish_producing(self):
+        self.factory.throughputs.extend([self.factory.cur_time - dvd for dvd in self.batch])
         super().finish_producing()
+
         if self.total_produced - self.last_produced_count_replace_ink == self.next_dif_replace_ink:
             # Priority must be higher than the start producing scheduled in the super.finish_producing
             self.factory.schedule(0, self.start_repair, 9)

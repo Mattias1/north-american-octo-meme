@@ -113,8 +113,11 @@
                 % Arcs for buffer events
                 \path[arc,dashed] (sB) to (sA); % buffer.remove_product
                 \path[arc,dashed] (fB) to (assembly); % buffer.add_product
-                \path[arc,bend left=90,dashed,radius=30] (assembly) to (assembly);
-                % TODO: RADIUS
+                \node[fakeVertex] (radius1) at (-0.5,-2.6) {};
+                \node[fakeVertex] (radius2) at (-0.4,-2.9) {};
+                \node[fakeVertex] (radius3) at (-0.6,-2.9) {};
+                \path[edge,bend left=60,dashed] (radius3) to (radius1);
+                \path[arc,bend left=60,dashed] (radius1) to (radius2);
                 \path[arc,dashed] (assembly) to (sC); % buffer.add_product
                 \path[arc,dashed] (sC) to (sB); % buffer.remove_product
                 \path[arc,dashed] (sD) to (sC); % buffer.remove_product

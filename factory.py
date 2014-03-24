@@ -29,7 +29,6 @@ class Event:
 
 class Factory(PriorityQueue):
     cur_time = 0
-    stats = {}
 
     its_day = True
 
@@ -39,8 +38,9 @@ class Factory(PriorityQueue):
 
     def __init__(self, repairmen_day, repairmen_night):
         PriorityQueue.__init__(self)
-        self.throughputs = []
 
+        self.throughputs = []
+        self.stats = {}
         self.machines = []
 
         samplesA.sort()
@@ -87,22 +87,22 @@ class Factory(PriorityQueue):
 
     def update_stats(self):
         # Update your own stats
-        self.stats['- time'] = self.cur_time
-        self.stats['- available repairmen'] = self.available_repairmen
-        self.stats['- time of day'] = 'day' if self.its_day else 'night'
-        self.stats['- total produced'] = sum([m.total_produced for m in self.machines if isinstance(m, MachineD)])
-        self.stats['- average produced'] = self.stats['- total produced'] / (self.cur_time or 1)
-        self.stats['- average throughput'] = sum(self.throughputs) / float(len(self.throughputs) or 1)
+        self.stats[' time'] = self.cur_time
+        self.stats[' available repairmen'] = self.available_repairmen
+        self.stats[' time of day'] = 'day' if self.its_day else 'night'
+        self.stats[' total produced'] = sum([m.total_produced for m in self.machines if isinstance(m, MachineD)])
+        self.stats[' average produced'] = self.stats[' total produced'] / (self.cur_time or 1)
+        self.stats[' average throughput'] = sum(self.throughputs) / float(len(self.throughputs) or 1)
 
         temp_list = []
         temp_string = ''
-        for _ in range(15):
+        for _ in range(20):
             if not self.empty():
                 temp_list.append(self.get())
         for evt in temp_list:
             self.put(evt)
-            temp_string += '\n' + str(evt)
-        self.stats['- queue items'] = '({}) {}'.format(self.qsize(), temp_string)
+            temp_string += '\n ' + str(evt)
+        self.stats['Queue items'] = '({}) {}'.format(self.qsize(), temp_string)
 
         # Update the stats of the machines
         for machine in self.machines:
@@ -144,16 +144,15 @@ class Factory(PriorityQueue):
     def stop(self):
         self.EOS = True
 
-    def add_repairman(self):
+    def add_repairman(self, amount=1):
         # Check if there is a machine broken right now, and do stuff with it.
         # Only called from end_repair event.
+        self.available_repairmen += amount
         if self.available_repairmen == 0:
             for machine in self.machines:
                 if machine.status == BROKEN:
                     self.schedule(0, machine.start_repair)
                     return
-        # If nothing has to be repaired right away, just let the poor guy drink his coffee
-        self.available_repairmen += 1
 
     def check_change_day_night(self):
         # Assumptions: - At time 0 it is 6 am (start of the day). - A repairman finishes his job before he goes home.

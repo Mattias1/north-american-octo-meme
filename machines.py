@@ -12,12 +12,41 @@ from samples import samplesA, samplesB, samplesD
 
 class Machine:
     """Abstract base class for machines"""
-    status = BORED
+    _status = BORED
+    old_status_time = 0
     has_discarded = False
     total_produced = 0
     total_discarded = 0
+    total_busy_time = 0
+    total_bored_time = 0
+    total_down_time = 0
     batchsize = 1
     breakdowns = 0
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        # If the status doesn't actually change, don't do anything.
+        if self._status == value:
+            return
+        # If the machine is no longer busy
+        if self._status == BUSY:
+            self.total_busy_time += self.factory.cur_time - self.old_status_time
+            self.old_status_time = self.factory.cur_time
+        # If the machine is no longer bored
+        if self._status == BORED:
+            self.total_bored_time += self.factory.cur_time - self.old_status_time
+            self.old_status_time = self.factory.cur_time
+        # If the machine is no longer down
+        down = [ BROKEN, REPAIRING, REPAIRING_DOUBLE ]
+        if self._status in down and value not in down:
+            self.total_down_time += self.factory.cur_time - self.old_status_time
+            self.old_status_time = self.factory.cur_time
+        # Finally set the new value
+        self._status = value
 
     def __init__(self, factory, providers, receivers):
         self.stats = {}
@@ -36,6 +65,9 @@ class Machine:
         self.stats['total_discarded'] = self.total_discarded
         self.stats['receivers_storage'] = sum([len(r.storage) for r in self.receivers])
         self.stats['breakdowns'] = self.breakdowns
+        self.stats['time_busy'] = self.total_busy_time
+        self.stats['time_bored'] = self.total_bored_time
+        self.stats['time_down'] = self.total_down_time
 
     def production_duration(self):
         raise NotImplementedError('Production duration is abstract')
@@ -80,20 +112,28 @@ class Machine:
             self.total_discarded += 1
             self.has_discarded = True
 
-        if False:
-            self.status = REPAIRING_DOUBLE  # Not sure right now
         if self.factory.available_repairmen > 0:
             self.factory.available_repairmen -= 1
             self.status = REPAIRING
+            if self.double_repair() and self.factory.available_repairmen > 0:
+                self.factory.available_repairmen -= 1
+                self.status = REPAIRING_DOUBLE
             self.factory.schedule(self.repair_duration(), self.end_repair)
         else:
             self.status = BROKEN
 
     def end_repair(self):
         """Finish the repairing of the machine."""
+        if self.status not in [ REPAIRING, REPAIRING_DOUBLE ]:
+            print('WARNING: end_repair while status is not repairing: status={}, machine={}'.format(self.status, self.__class__.__name__))
+            self.factory.pause()
+            # assert self.status in [ REPAIRING, REPAIRING_DOUBLE ]
+        # TODO: This really happends! ~Matty, 24-3-2014
+
         # Dismiss the repair guy(s)
-        self.factory.add_repairman()
         if self.status == REPAIRING_DOUBLE:
+            self.factory.add_repairman(2)
+        else:
             self.factory.add_repairman()
 
         # Give the machine something to do again
@@ -104,6 +144,10 @@ class Machine:
         duration = self.lifetime_duration()
         if duration != -1:
             self.factory.schedule(duration, self.start_repair)
+
+    def double_repair(self):
+        """Whether or not we need two repair guys for the machine."""
+        return False
 
 
 #
@@ -124,11 +168,19 @@ class MachineA(Machine):
 
     def lifetime_duration(self):
         # Exponential distribution with a mean of 8 hours
+        return 0.5
         return exp(1 / (8 * 3600))
 
     def repair_duration(self):
         # Exponential distribution with a mean of 2 hours
+        return 0.5
         return exp(1 / (2 * 3600))
+
+    def double_repair(self):
+        # 50% chance at needing two repair guys for a machine
+        # 50% is chosen as the only thing we know is 'sometimes' - assumption (!)
+        return False
+        #return (randint(0, 1) == 0)
 
 
 class MachineB(Machine):

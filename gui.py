@@ -38,7 +38,7 @@ class Application(Frame):
         btn = Button(control_frame, text="Exit", command=self.exit)
         btn.pack(anchor=NW, side=LEFT, **padding)
 
-        # The frame for the machine stats (and now also for tthe factory stats)
+        # The frame for the machine stats (and now also for the factory stats)
         stat_frame = Frame(self)
         stat_frame.pack(anchor=NW, fill=BOTH, expand=1)
 
@@ -58,7 +58,9 @@ class Application(Frame):
 
     def new(self):
         self.stop()
-        self.factory = Factory(10, 7)  # TODO: There was something about the 10 or 11 and 7 or 8
+        # If nescessary, we can phone an extra repair guy, so we can just pick 11,8.
+        # In practise this doesnt matter, as we are never short of repair guys.
+        self.factory = Factory(11, 8)
         self.running = True
         sim_thread = Thread(target=self.factory.start)
         stats_thread = Thread(target=self.print_stats)
@@ -97,14 +99,16 @@ class Application(Frame):
                 for machine in self.factory.machines:
                     if mtype == machine.__class__:
                         text = [mtype.__name__ + ':']
-                        for key, value in machine.stats.items():
+                        for key, value in sorted(machine.stats.items()):
                             text.append(' {}: {}'.format(key, value))
                         messages.append('\n'.join(text))
                 mlabels[i].config(font=("Arial", 10), text='\n\n'.join(messages))
 
             # Factory
             messages = [self.facstr()]
-            for key, value in self.factory.stats.items():
+            for key, value in sorted(self.factory.stats.items()):
+                if key[0] == 'Q':
+                    messages.append('')
                 messages.append(key + ': ' + str(value))
             self.write('\n'.join(messages))
 
@@ -121,7 +125,7 @@ class Application(Frame):
 def main():
     """The main entrypoint for this application"""
     root = Tk()
-    root.geometry("1030x550")
+    root.geometry("1260x685+10+0")
     app = Application(master=root)
     app.mainloop()
 

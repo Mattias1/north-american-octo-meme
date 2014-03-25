@@ -95,6 +95,8 @@ class Machine:
             self.batch = []
             return
 
+        assert self.status == BUSY
+
         self.status = BORED
         for buffer in self.receivers:
             if buffer.enough_room(self.batchsize):
@@ -107,6 +109,8 @@ class Machine:
 
     def start_repair(self):
         """In the case of a breakdown, try to start repairing."""
+        assert self.status != REPAIRING and self.status != REPAIRING_DOUBLE
+
         self.breakdowns += 1
         if self.status == BUSY:
             self.total_discarded += 1
@@ -124,11 +128,7 @@ class Machine:
 
     def end_repair(self):
         """Finish the repairing of the machine."""
-        if self.status not in [ REPAIRING, REPAIRING_DOUBLE ]:
-            print('WARNING: end_repair while status is not repairing: status={}, machine={}'.format(self.status, self.__class__.__name__))
-            self.factory.pause()
-            # assert self.status in [ REPAIRING, REPAIRING_DOUBLE ]
-        # TODO: This really happends! ~Matty, 24-3-2014
+        assert self.status in [ REPAIRING, REPAIRING_DOUBLE ]
 
         # Dismiss the repair guy(s)
         if self.status == REPAIRING_DOUBLE:
@@ -158,6 +158,8 @@ class MachineA(Machine):
         Machine.__init__(self, factory, [], receivers)
 
     def start_producing(self):
+        if self.status != BORED:
+            return
         # MachineA has no providers
         self.status = BUSY
         self.factory.schedule(self.production_duration(), self.finish_producing)
@@ -168,19 +170,16 @@ class MachineA(Machine):
 
     def lifetime_duration(self):
         # Exponential distribution with a mean of 8 hours
-        return 0.5
         return exp(1 / (8 * 3600))
 
     def repair_duration(self):
         # Exponential distribution with a mean of 2 hours
-        return 0.5
         return exp(1 / (2 * 3600))
 
     def double_repair(self):
         # 50% chance at needing two repair guys for a machine
         # 50% is chosen as the only thing we know is 'sometimes' - assumption (!)
-        return False
-        #return (randint(0, 1) == 0)
+        return (randint(0, 1) == 0)
 
 
 class MachineB(Machine):

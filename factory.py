@@ -91,12 +91,12 @@ class Factory(PriorityQueue):
 
     def update_stats(self):
         # Update your own stats
-        self.stats['time'] = self.cur_time
-        self.stats['duration'] = self.duration
+        self.stats['time'] = self.cur_time / (60 * 60)
+        self.stats['duration'] = self.duration / (60 * 60)
         self.stats['available repairmen'] = self.available_repairmen
         self.stats['time of day'] = 'day' if self.its_day else 'night'
         self.stats['total produced'] = sum([m.total_produced for m in self.machines if isinstance(m, MachineD)])
-        self.stats['average produced'] = self.stats['total produced'] / (self.cur_time or 1)
+        self.stats['average produced'] = self.stats['total produced'] * 60 * 60 / (self.cur_time or 1)
         self.stats['average throughput'] = sum(self.throughputs) / float(len(self.throughputs) or 1)
 
         temp_list = []

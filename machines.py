@@ -65,9 +65,9 @@ class Machine:
         self.stats['total_discarded'] = self.total_discarded
         self.stats['receivers_storage'] = sum([len(r.storage) for r in self.receivers])
         self.stats['breakdowns'] = self.breakdowns
-        self.stats['time_busy'] = self.total_busy_time
-        self.stats['time_bored'] = self.total_bored_time
-        self.stats['time_down'] = self.total_down_time
+        self.stats['time_busy'] = self.total_busy_time / (60 * 60)
+        self.stats['time_bored'] = self.total_bored_time / (60 * 60)
+        self.stats['time_down'] = self.total_down_time / (60 * 60)
 
     def production_duration(self):
         raise NotImplementedError('Production duration is abstract')

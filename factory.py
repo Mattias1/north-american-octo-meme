@@ -37,8 +37,10 @@ class Factory(PriorityQueue):
     running = False
     do_one_step = False
 
-    def __init__(self, repairmen_day, repairmen_night, seed):
+    def __init__(self, repairmen_day, repairmen_night, seed, duration, silent=False):
         PriorityQueue.__init__(self)
+        self.silent = silent
+        self.duration = duration
         random.seed(seed)
 
         self.throughputs = []
@@ -114,7 +116,9 @@ class Factory(PriorityQueue):
         for machine in self.machines:
             if machine.__class__ == MachineA:
                 self.schedule(0, machine.start_producing)
-        self.update_stats()
+
+        if not self.silent:
+            self.update_stats()
 
         while not self.empty() and not self.EOS:
             # Manage sleeping
@@ -127,12 +131,16 @@ class Factory(PriorityQueue):
             # Manage events
             event = self.get()
             assert event.time >= self.cur_time
+            if self.cur_time >= self.duration:
+                print(self.cur_time >= self.duration)
+                break
             self.cur_time = event.time
             self.check_change_day_night()
             event.handler()
 
             # Statistics
-            self.update_stats()
+            if not self.silent:
+                self.update_stats()
 
     def play(self):
         self.running = True

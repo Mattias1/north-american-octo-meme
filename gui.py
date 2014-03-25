@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.ttk import *
 from threading import Thread
 from time import sleep
+import random
 
 from factory import Factory
 import machines
@@ -38,6 +39,11 @@ class Application(Frame):
         btn = Button(control_frame, text="Exit", command=self.exit)
         btn.pack(anchor=NW, side=LEFT, **padding)
 
+        self.seed_entry = Entry(control_frame)
+        self.seed_entry.pack(anchor=NW, side=LEFT, **padding)
+        self.seed_label = Label(control_frame, font=("Arial", 10))
+        self.seed_label.pack(anchor=NW, side=LEFT, **padding)
+
         # The frame for the machine stats (and now also for the factory stats)
         stat_frame = Frame(self)
         stat_frame.pack(anchor=NW, fill=BOTH, expand=1)
@@ -56,11 +62,21 @@ class Application(Frame):
         self.machinesD = Label(stat_frame, text='D')
         self.machinesD.pack(anchor=NW, side=LEFT, **padding)
 
+    @property
+    def seed(self):
+        return self._seed
+
+    @seed.setter
+    def seed(self, value):
+        self._seed = value
+        self.seed_label.config(font=("Arial", 10), text='current seed: ' + str(value))
+
     def new(self):
         self.stop()
-        # If nescessary, we can phone an extra repair guy, so we can just pick 11,8.
+        # If necessary, we can phone an extra repair guy, so we can just pick 11,8.
         # In practise this doesnt matter, as we are never short of repair guys.
-        self.factory = Factory(11, 8)
+        self.seed = self.seed_entry.get() or random.random()
+        self.factory = Factory(11, 8, self.seed)
         self.running = True
         sim_thread = Thread(target=self.factory.start)
         stats_thread = Thread(target=self.print_stats)

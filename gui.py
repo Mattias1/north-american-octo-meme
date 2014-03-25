@@ -76,7 +76,7 @@ class Application(Frame):
         # If necessary, we can phone an extra repair guy, so we can just pick 11,8.
         # In practise this doesnt matter, as we are never short of repair guys.
         self.seed = self.seed_entry.get() or random.random()
-        self.factory = Factory(11, 8, self.seed, 1)
+        self.factory = Factory(11, 8, self.seed, 1000)
         self.running = True
         sim_thread = Thread(target=self.factory.start)
         stats_thread = Thread(target=self.print_stats)

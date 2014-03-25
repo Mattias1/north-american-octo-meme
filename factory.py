@@ -92,6 +92,7 @@ class Factory(PriorityQueue):
     def update_stats(self):
         # Update your own stats
         self.stats[' time'] = self.cur_time
+        self.stats[' duration'] = self.duration
         self.stats[' available repairmen'] = self.available_repairmen
         self.stats[' time of day'] = 'day' if self.its_day else 'night'
         self.stats[' total produced'] = sum([m.total_produced for m in self.machines if isinstance(m, MachineD)])

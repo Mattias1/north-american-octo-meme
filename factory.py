@@ -4,6 +4,7 @@ from machines import MachineA, MachineB, MachineC, MachineD, BROKEN
 from samples import samplesA, samplesB, samplesD
 from buffers import Buffer, AssemblyLine
 from time import sleep
+import random
 
 
 class Event:
@@ -36,8 +37,9 @@ class Factory(PriorityQueue):
     running = False
     do_one_step = False
 
-    def __init__(self, repairmen_day, repairmen_night):
+    def __init__(self, repairmen_day, repairmen_night, seed):
         PriorityQueue.__init__(self)
+        random.seed(seed)
 
         self.throughputs = []
         self.stats = {}

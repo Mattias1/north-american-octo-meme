@@ -124,8 +124,9 @@ class Application(Frame):
             messages = [self.facstr()]
             for key, value in sorted(self.factory.stats.items()):
                 if key[0] == 'Q':
-                    messages.append('')
-                messages.append(key + ': ' + str(value))
+                    messages.append('\n{}: {}'.format(key, value))
+                else:
+                    messages.insert(1, ' {}: {}'.format(key, value))
             self.write('\n'.join(messages))
 
             sleep(1 / self.refresh_rate)

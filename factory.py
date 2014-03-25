@@ -37,7 +37,7 @@ class Factory(PriorityQueue):
     running = False
     do_one_step = False
 
-    def __init__(self, repairmen_day, repairmen_night, seed, duration, silent=False):
+    def __init__(self, repairmen_day, repairmen_night, buffersizeA, buffersizeB, buffersizeC, batchsize, seed, duration, silent=False):
         PriorityQueue.__init__(self)
         self.silent = silent
         self.duration = duration
@@ -51,8 +51,8 @@ class Factory(PriorityQueue):
         samplesB.sort()
         samplesD.sort()
 
-        bufferA12 = Buffer(self, 20)
-        bufferA34 = Buffer(self, 20)
+        bufferA12 = Buffer(self, buffersizeA)
+        bufferA34 = Buffer(self, buffersizeA)
         machineA1 = MachineA(self, [bufferA12])
         machineA2 = MachineA(self, [bufferA12])
         machineA3 = MachineA(self, [bufferA34])
@@ -60,8 +60,8 @@ class Factory(PriorityQueue):
         bufferA12.providers = [machineA1, machineA2]
         bufferA34.providers = [machineA3, machineA4]
 
-        bufferB1 = AssemblyLine(self, 20)  # Assembly line
-        bufferB2 = AssemblyLine(self, 20)  # Assembly line
+        bufferB1 = AssemblyLine(self, buffersizeB)  # Assembly line
+        bufferB2 = AssemblyLine(self, buffersizeB)  # Assembly line
         machineB1 = MachineB(self, [bufferA12], [bufferB1])
         machineB2 = MachineB(self, [bufferA34], [bufferB2])
         bufferA12.receivers = [machineB1]  # Done: not crosswise
@@ -69,10 +69,10 @@ class Factory(PriorityQueue):
         bufferB1.providers = [machineB1]  # Assembly line
         bufferB2.providers = [machineB2]  # Assembly line
 
-        bufferC1 = Buffer(self, 20)
-        bufferC2 = Buffer(self, 20)
-        machineC1 = MachineC(self, [bufferB1, bufferB2], [bufferC1, bufferC2])
-        machineC2 = MachineC(self, [bufferB1, bufferB2], [bufferC1, bufferC2])
+        bufferC1 = Buffer(self, buffersizeC)
+        bufferC2 = Buffer(self, buffersizeC)
+        machineC1 = MachineC(self, [bufferB1, bufferB2], [bufferC1, bufferC2], batchsize)
+        machineC2 = MachineC(self, [bufferB1, bufferB2], [bufferC1, bufferC2], batchsize)
         bufferB1.receivers = [machineC1, machineC2]  # Assembly line Done: crosswise deliveries
         bufferB2.receivers = [machineC1, machineC2]  # Assembly line
         bufferC1.providers = [machineC1]

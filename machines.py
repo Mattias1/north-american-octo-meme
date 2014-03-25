@@ -205,7 +205,9 @@ class MachineB(Machine):
 
 
 class MachineC(Machine):
-    batchsize = 20
+    def __init__(self, factory, providers, receivers, batchsize):
+        self.batchsize = batchsize
+        Machine.__init__(self, factory, providers, receivers)
 
     def production_duration(self):
         # One exponential with an average of 10 seconds,

@@ -165,7 +165,8 @@ class Factory(PriorityQueue):
                     return
 
     def check_change_day_night(self):
-        # Assumptions: - At time 0 it is 6 am (start of the day). - A repairman finishes his job before he goes home.
+        # Assumptions: - At time 0 it is 6 am (start of the day).
+        # A repairman finishes his job before he goes home.
         nr_half_days = self.cur_time // (12 * 3600)
         if (nr_half_days % 2 == 0) != self.its_day:
             self.its_day = not self.its_day

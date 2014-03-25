@@ -41,7 +41,7 @@ class Machine:
             self.total_bored_time += self.factory.cur_time - self.old_status_time
             self.old_status_time = self.factory.cur_time
         # If the machine is no longer down
-        down = [ BROKEN, REPAIRING, REPAIRING_DOUBLE ]
+        down = [BROKEN, REPAIRING, REPAIRING_DOUBLE]
         if self._status in down and value not in down:
             self.total_down_time += self.factory.cur_time - self.old_status_time
             self.old_status_time = self.factory.cur_time
@@ -128,7 +128,7 @@ class Machine:
 
     def end_repair(self):
         """Finish the repairing of the machine."""
-        assert self.status in [ REPAIRING, REPAIRING_DOUBLE ]
+        assert self.status in [REPAIRING, REPAIRING_DOUBLE]
 
         # Dismiss the repair guy(s)
         if self.status == REPAIRING_DOUBLE:
@@ -179,7 +179,7 @@ class MachineA(Machine):
     def double_repair(self):
         # 50% chance at needing two repair guys for a machine
         # 50% is chosen as the only thing we know is 'sometimes' - assumption (!)
-        return (randint(0, 1) == 0)
+        return randint(0, 1) == 0
 
 
 class MachineB(Machine):
@@ -210,7 +210,7 @@ class MachineC(Machine):
     def production_duration(self):
         # One exponential with an average of 10 seconds,
         # plus another exponential with an average of 6 seconds, plus 3 minutes.
-        return exp(1 / 10) + exp(1 / 6) + 3*60  # insert something here
+        return exp(1 / 10) + exp(1 / 6) + 3 * 60  # insert something here
 
     def lifetime_duration(self):
         return -1  # This crashes every 3% of the DVD's

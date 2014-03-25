@@ -91,13 +91,13 @@ class Factory(PriorityQueue):
 
     def update_stats(self):
         # Update your own stats
-        self.stats[' time'] = self.cur_time
-        self.stats[' duration'] = self.duration
-        self.stats[' available repairmen'] = self.available_repairmen
-        self.stats[' time of day'] = 'day' if self.its_day else 'night'
-        self.stats[' total produced'] = sum([m.total_produced for m in self.machines if isinstance(m, MachineD)])
-        self.stats[' average produced'] = self.stats[' total produced'] / (self.cur_time or 1)
-        self.stats[' average throughput'] = sum(self.throughputs) / float(len(self.throughputs) or 1)
+        self.stats['time'] = self.cur_time
+        self.stats['duration'] = self.duration
+        self.stats['available repairmen'] = self.available_repairmen
+        self.stats['time of day'] = 'day' if self.its_day else 'night'
+        self.stats['total produced'] = sum([m.total_produced for m in self.machines if isinstance(m, MachineD)])
+        self.stats['average produced'] = self.stats['total produced'] / (self.cur_time or 1)
+        self.stats['average throughput'] = sum(self.throughputs) / float(len(self.throughputs) or 1)
 
         temp_list = []
         temp_string = ''
@@ -133,7 +133,6 @@ class Factory(PriorityQueue):
             event = self.get()
             assert event.time >= self.cur_time
             if self.cur_time >= self.duration:
-                print(self.cur_time >= self.duration)
                 break
             self.cur_time = event.time
             self.check_change_day_night()

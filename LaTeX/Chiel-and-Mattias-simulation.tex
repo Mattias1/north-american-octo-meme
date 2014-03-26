@@ -1,0 +1,230 @@
+\documentclass{article}
+
+\title{Simulation assignment}
+\author{Chiel ten Brinke (3677133) and Mattias Beimers (3672565)}
+\date{\vspace{-3ex}}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage[margin=1.75in]{geometry}
+\usepackage[parfill]{parskip}
+
+\usetikzlibrary{arrows,shapes,decorations.pathmorphing}
+
+\newcommand{\Break}{\State \textbf{break}}
+\renewcommand{\qed}{\hfill \ensuremath{\square}}
+
+\newcommand{\calC}{\ensuremath{\mathcal{C}}}
+\newcommand{\calCC}{\ensuremath{\mathcal{C'}}}
+\newcommand{\reduc}{\ensuremath{\leq_P} }
+
+\newtheorem{lemma}{Lemma}[section]
+
+\begin{document}
+\tikzstyle{vertex}=[circle,very thick,draw=black,fill=black!25,minimum size=35pt,inner sep=0pt,align=center,text width=30pt,font=\scriptsize]
+\tikzstyle{fakeVertex}=[circle,minimum size=1pt,inner sep=0pt]
+\tikzstyle{edge} = [draw,thick,-]
+\tikzstyle{arc} = [draw,thick,->]
+\tikzstyle{weight} = [font=\scriptsize]
+
+\maketitle
+
+
+\section{Problem description}
+We present a simulation study for the buffer- and batch-size design of a production line of DVD's.
+Moreover, we analyze improvements for the line, by, among others, finding the best buffer- and bacth-sizes and alleviating the impact of bottlenecks.
+
+The production process of DVD's consists of the following steps:
+\begin{enumerate}[A.]
+    \item Injection molding
+    \item Dye coating and drying
+    \item Sputtering, lacquer coating, drying
+    \item Printing and finishing 
+\end{enumerate}
+The machines have limited buffer space, and step C is done with batch processing.
+Machines can break down, possibly causing them to be out of production for a while,
+and discarding DVD's they were producing. Also some machines need cleaning or replacing of ink.
+These problems are solved by repairmen, working in shifts.
+
+\section{Assumptions}
+These are some of our assumptions:
+\begin{enumerate}
+    \item
+        Machine A discards any DVD's that is being produced at the event of a breakdown.
+    \item
+        When machine A breaks, sometimes there are two ppl repairing it.
+        We assume that this happends half of the time.
+        This way we are not likely to assume too little.
+    \item
+        Machines C and D are expected to start with cleaning or ink replacing after the (batch of) DVD's is finished.
+    \item
+        We assume that a repairman finishes repairing the machine before going home.
+    \item
+        We start the simulation at 6 o'clock in the morning.
+\end{enumerate}
+
+\section{Analysis of the problem}
+We want to solve this problem by performing a simulation study. % ???
+
+
+\section{The model}
+\subsection{The eventgraph}
+This is a part of our event graph (without the breakdowns).
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[auto,swap]
+        % The machine start and finish events
+        \node[vertex] (sA) at (-2,0) {MA start};
+        \node[vertex] (fA) at (1,0) {MA finish};
+        \node[vertex] (sB) at (-2,-2) {MB start};
+        \node[vertex] (fB) at (1,-2) {MB finish};
+        \node[vertex] (sC) at (-2,-5) {MC start};
+        \node[vertex] (fC) at (1,-5) {MC finish};
+        \node[vertex] (sD) at (-2,-7) {MD start};
+        \node[vertex] (fD) at (1,-7) {MD finish};
+
+        % Buffer events
+        \node[vertex] (assembly) at (-0.5,-3.5) {Put in crate};
+
+        % The breakdown events
+        \node[fakeVertex] (sos3) at (-5,-2.2) {};
+        \node[vertex] (rfA) at (-4,1) {MA finishes repairing};
+        \node[vertex] (rsA) at (-4.5,-1.1) {MA starts repairing};
+        \node[vertex] (rfC) at (-4,-4.6) {MC finishes cleaning};
+        \node[vertex] (rsC) at (-4,-6.6) {MC starts cleaning};
+        \node[vertex] (rfD) at (-0.5,-8.5) {MD finishes ink replacing};
+
+        % The start- and end- of simulation events
+        \node[fakeVertex] (sos1) at (-2.5,-1) {};
+        \node[fakeVertex] (sos2) at (3,-7.5) {};
+        \node[vertex] (eos) at (3.5,-6.5) {End of sim};
+
+        % Arcs for machine start and finish events
+        \path[arc,bend left=10] (sA) to (fA);
+        \path[arc,bend left=10,dashed] (fA) to (sA);
+        \path[arc,dashed] (fA) to (sB); % buffer.add_product
+        \path[arc,bend left=10] (sB) to (fB);
+        \path[arc,bend left=10,dashed] (fB) to (sB);
+        \path[arc,bend left=10] (sC) to (fC);
+        \path[arc,bend left=10,dashed] (fC) to (sC);
+        \path[arc,dashed] (fC) to (sD); % buffer.add_product
+        \path[arc,bend left=10] (sD) to (fD);
+        \path[arc,bend left=10,dashed] (fD) to (sD);
+        %\path[arc] (fD) to (eos);
+
+        % Arcs for buffer events
+        \path[arc,dashed] (sB) to (sA); % buffer.remove_product
+        \path[arc,dashed] (fB) to (assembly); % buffer.add_product
+        \node[fakeVertex] (radius1) at (-0.5,-2.6) {};
+        \node[fakeVertex] (radius2) at (-0.4,-2.9) {};
+        \node[fakeVertex] (radius3) at (-0.6,-2.9) {};
+        \path[edge,bend left=60,dashed] (radius3) to (radius1);
+        \path[arc,bend left=60,dashed] (radius1) to (radius2);
+        \path[arc,dashed] (assembly) to (sC); % buffer.add_product
+        \path[arc,dashed] (sC) to (sB); % buffer.remove_product
+        \path[arc,dashed] (sD) to (sC); % buffer.remove_product
+
+        % Arcs for breakdown events
+        \path[arc,bend left=15] (rsA) to (rfA);
+        \path[arc,bend left=15,dashed] (rfA) to (rsA); % factory.add_repairman
+        \path[arc,dashed] (rfA) to (sA);
+        \path[arc,dashed] (fC) to (rsC);
+        \path[arc] (rsC) to (rfC);
+        \path[arc,dashed] (rfC) to (sC);
+        \path[arc,dashed] (rfC) to (sD);
+        \path[arc] (fD) to (rfD);
+        \path[arc,dashed] (rfD) to (sD);
+
+        % Start of sim arcs
+        \path[draw, thick, ->, line join=round, decorate, decoration={
+                zigzag,
+                segment length=8,
+                amplitude=1,post=lineto,
+                post length=2pt
+        }]  (sos1) -- (sA);
+        \path[draw, thick, ->, line join=round, decorate, decoration={
+                zigzag,
+                segment length=8,
+                amplitude=1,post=lineto,
+                post length=2pt
+        }]  (sos2) -- (eos);
+        \path[draw, thick, ->, line join=round, decorate, decoration={
+                zigzag,
+                segment length=8,
+                amplitude=1,post=lineto,
+                post length=2pt
+        }]  (sos3) -- (rsA);
+    \end{tikzpicture}
+    \caption{The eventgraph of the simulation.}\label{fig:event-graph}
+\end{figure}
+
+\subsection{The event handlers}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+\subsection{Performance measures}
+\label{performance_measures}
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+\subsection{State}
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+
+\section{Input analysis}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+\section{Experiments}
+% TODO:
+% - arguments for running time of choice (steady state etc)
+% - input analysis
+%
+\subsection{Set up}
+Our goal is to give insight in possible improvements in the production process of the dvd production line with respect to changes in the buffersizes and the batchsize of the machines.
+To do so, we will mainly investigate the performance measures mentioned in section~\ref{performance_measures}, and see wether they can coexist optimally or there is a trade-off involved.
+While having the simulation at hand anyway, we can also have a look for possible bottlenecks caused by things other than the configuration of the buffersizes and the batchsize.
+
+We will choose various configurations for the buffersizes and the batchsize, and run the simulation several times for each of the configurations.
+
+For each configuration:
+    run simulation and compute performance measures and confidence interval
+    conclude which configurations provide significant improvements
+
+
+As confidence level $1 - \alpha$ we choose the fairly standard value of $0.95$.
+Suppose that we run the simulation, for each configuration, $n$ times, resulting in $n$ sample values, for each performance measure, with mean $\bar{x}$ and deviation $s$.
+
+Then $P(-c \leq T \leq c) = 0.95 $ with $T = \frac{\bar{x} - \mu}{s/\sqrt{n}}$ (student t distribution) and $c = \Phi ^{-1} (1 - \frac{\alpha}{2})= 1.96$.
+From this it follows that the confidence interval can be computed as
+\[ (\bar{x} - \frac{cs}{\sqrt{n}}, \bar{x} + \frac{cs}{\sqrt{n}}) =
+(\bar{x} - \frac{1.96s}{\sqrt{n}}, \bar{x} + \frac{1.96s}{\sqrt{n}}). \]
+
+
+\subsection{Results}
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+\section{Conclusions}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+\section{Appendix}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+\end{document}

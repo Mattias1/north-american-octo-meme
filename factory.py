@@ -37,7 +37,7 @@ class Factory(PriorityQueue):
     running = False
     do_one_step = False
 
-    def __init__(self, repairmen_day, repairmen_night, buffersizeA, buffersizeB, buffersizeC, batchsize, seed, duration, silent=False):
+    def __init__(self, repairmen_day, repairmen_night, batchsize, buffersizeA, buffersizeB, buffersizeC, seed, duration, silent=False):
         PriorityQueue.__init__(self)
         self.silent = silent
         self.duration = duration

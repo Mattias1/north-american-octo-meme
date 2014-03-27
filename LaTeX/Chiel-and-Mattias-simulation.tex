@@ -353,35 +353,32 @@ Moreover, we used 100 fixed seeds for each run, to make sure the confidence inte
 
 We list the most relevant results below that are representative enough to illustrate the conclusions we have drawn from all the results. We don't list all the results here for reasons of clarity.
 
-WORST:
-configuration: (40, 200, 200, 40)
-production results: (27198.555555555555, 526.30217110386502, [25984.900572713002, 28412.210538398107])
-throughput results: (1579.2680692241947, 18.061187139128066, [1537.6188969977538, 1620.9172414506356])
+\begin{table}[h]
+    \begin{tabular}{|p{3cm}|p{2.5cm}|p{1.5cm}|p{1.5cm}|p{3cm}|}
+    \hline
+    Configuration      & Performance measure & Mean  & Standard deviation & Confidence interval \\ \hline
 
-configuration: (40, 40, 200, 40)
-production results: (27375.444444444445, 592.06041149885834, [26010.150687338519, 28740.738201550372])
-throughput results: (1573.040276998177, 22.339821342340983, [1521.524556606832, 1624.555997389522])
+    (40, 200, 200, 40) & Production          & 27198 & 526.3              & [52985, 28412]      \\ \hline
+                       & Throughput          & 1579  & 18.0               & [1538, 1621]        \\ \hline
+    (40, 40, 200, 40)  & Production          & 27375 & 592.0              & [26010, 28741]      \\ \hline
+                       & Throughput          & 1573  & 22.3               & [1522, 1625]        \\ \hline
+    (40, 20, 200, 40)  & Production          & 27484 & 466.3              & [26408, 28559]      \\ \hline
+                       & Throughput          & 1566  & 18.3               & [1523, 1608]        \\ \hline
+    \dots              & \dots               & \dots & \dots              & \dots               \\ \hline
 
-configuration: (40, 20, 200, 40)
-production results: (27483.777777777777, 466.31944754695127, [26408.44320348803, 28559.112352067525])
-throughput results: (1565.622584597756, 18.322759035563173, [1523.3702264965273, 1607.8749426989848])
+    (20, 20, 40, 200)  & Production          & 40960 & 66.3               & [40807, 41113]      \\ \hline
+                       & Throughput          & 3191  & 147.9              & [2850, 3532]        \\ \hline
+    (20, 40, 40, 200)  & Production          & 40988 & 46.6               & [40880, 41095]      \\ \hline
+                       & Throughput          & 3133  & 123.0              & [2849, 3417]        \\ \hline
 
-BEST:
-configuration: (20, 20, 40, 200)
-production results: (40960.444444444445, 66.365174751168155, [40807.406077046042, 41113.482811842849])
-throughput results: (3191.3877651221392, 147.91704351154394, [2850.2904511426077, 3532.4850791016706])
-
-configuration: (20, 40, 40, 200)
-production results: (40987.666666666664, 46.591308202281681, [40880.226917295586, 41095.106416037743])
-throughput results: (3133.1749403399695, 123.0249144741494, [2849.478978850454, 3416.8709018294849])
-
-configuration: (20, 200, 40, 200)
-production results: (40987.666666666664, 46.591308202281681, [40880.226917295586, 41095.106416037743])
-throughput results: (3133.1749403399695, 123.0249144741494, [2849.478978850454, 3416.8709018294849])
-
-configuration: (10, 200, 20, 200)
-production results: (41069.666666666664, 27.131879567934266, [41007.100440191782, 41132.232893141547])
-throughput results: (4282.6478235611057, 365.30674514012816, [3440.2489587123887, 5125.0466884098232])
+    (20, 200, 40, 200) & Production          & 40988 & 46.5               & [40880, 41095]      \\ \hline
+                       & Throughput          & 3133  & 123.0              & [2849, 3417]        \\ \hline
+    (10, 200, 20, 200) & Production          & 41070 & 27.1               & [41007, 41132]      \\ \hline
+                       & Throughput          & 4283  & 365.3              & [3440, 5125]        \\ \hline
+    \end{tabular}
+    \caption {The three worst and four best results w.r.t.\ average production.}
+    \label{table:results_table}
+\end{table}
 
 
 \chapter{Conclusions}

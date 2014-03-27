@@ -264,3 +264,20 @@ throughput results: (2542.9195970928527, 193.06866307661963, [2138.8222411210436
 
 simulation duration: 3697.5781280994415
 
+
+
+
+
+AVERAGE PRODUCTION RESULTS
+Best results:
+  Batch:   10 of 20
+  BufferA: -
+  BufferB: 2x batch
+  BufferC: 200
+
+Worst results:
+  Batch:   40
+  BufferA: -
+  BufferB: 200
+  BufferC: 40
+

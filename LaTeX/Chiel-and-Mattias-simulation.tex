@@ -80,7 +80,7 @@ The state of the factory consists of the current time, whether it is day or nigh
 Of course, the state also contains a list of machines, each of these machines have the following state variables:
 The status of the machine, this is used to see if the machine is busy producing DVD's, if it is currently not doing anything, or if it's broken or being repaired (possibly with two repairmen).
 It also maintains whether or not it has discarded it's latest DVD\@.
-Since each machine is assigned his own buffer (with exception of machines A - for them two machines share a buffer), it also maintains the amount of DVD's in the buffer.
+Each machine also maintains the amount of DVD's in the buffer after him (so machine B maintains the count of the buffer between machine B and machine C).
 
 \subsection{Performance measures}
 \label{performance_measures}
@@ -182,22 +182,39 @@ This is our event graph.
     % The machine start and finish events
     \item Machine start:
         This is the event where the machine starts producing his DVD (or batch of DVD's).
-        It removes a DVD from the previous buffer (except for machine A of course, it creates a new DVD), it updates it's status to busy, and then schedules the machine end event.
+        It removes a DVD from the previous buffer
+        (except for machine A of course, it creates a new DVD),
+        it updates it's status to busy, and then schedules the machine end event.
         Removing an item from the previous buffer can possibly schedule a machine start event, if it was doing nothing because the buffer was full.
     \item Machine finish:
         This is the event where the machine finishes producing his DVD (or batch of DVD's).
-        It sets it's status to idle and adds a product
-        % Specials for each machine
+        It sets it's status to idle and adds a product to one of it's receiver buffers (when they are not full etc.).
+        Furthermore it updates the total amount of produced DVD's and it schedules a machine start event.
+        Adding an item to the buffer can possibly schedule a machine start event if it was idle due to a full buffer.
+        For machine B the finish producing can also discard a DVD,
+        for machine C and D it can schedule a start repair event.
 
     % Buffer events
     \item Put in crate:
+        This event is fired when a DVD leaves the conveyor belt, and is put in a crate, that is the buffer between machine B and C.
+        It adds the DVD to the buffer of course, and schedules the next put in crate event.
+        The conveyor belt is modelled as a queue of times between each DVD on the conveyor belt. That way we can effectively get the time of the first DVD that leaves the conveyor belt.
+        This event can also possibly schedule a start producing event in case of idle machines due to a full buffer.
 
     % The breakdown events
-    \item MA starts repairing:
-    \item MA finishes repairing:
-    \item MC starts cleaning:
-    \item MC finishes cleaning:
-    \item MD finishes ink replacing:
+    \item Start repairing:
+        This is the event that is fired in case of a breakdown, machine cleaning, or ink replacing. The effect in real life is that a machine cannot be used for a while, and is called start repairing for convenience.
+        It updates the status of the machine to repairing
+        (or repairing double if two repairmen are nescessary).
+        If there are no repairmen available it sets the status to broken.
+        It also updates the amount of breakdowns, the amount of discarded DVD's (if nescessary) and the amount of available repairmen.
+        It schedules the end repair event.
+        Note that machine B does not have repair events.
+
+    \item Finish repairing:
+        The end repair event is fired when a repairman is done with it's task.
+        It sets the machine's status to idle, adds a repairman (or two) to the available repairmen list.
+        It schedules a start producing event and for machine A also the new start repair event.
 
     % EOS
     \item End of simulation:

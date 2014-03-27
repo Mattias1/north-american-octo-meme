@@ -1,6 +1,6 @@
 """This module contains the machine classes."""
 BUSY = 'busy'
-BORED = 'bored'
+BORED = 'idle'
 BROKEN = 'broken'
 REPAIRING = 'repairing'
 REPAIRING_DOUBLE = 'repairing_double'

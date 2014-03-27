@@ -116,6 +116,22 @@ Here we list the most relevant assumptions for our simulation.
 
 
 \section{The model}
+\subsection{State}
+The factory has a set of state variables, and each of the machines also has some state variables of his own.
+The state of the factory consists of the current time, whether it is day or night and the amount of repairman available.
+Of course, the state also contains a list of machines, each of these machines have the following state variables:
+The status of the machine, this is used to see if the machine is busy producing DVD's, if it is currently not doing anything, or if it's broken or being repaired (possibly with two repairmen).
+It also maintains whether or not it has discarded it's latest DVD\@.
+Each machine also maintains the amount of DVD's in the buffer after him (so machine B maintains the count of the buffer between machine B and machine C).
+
+\subsection{Performance measures}
+\label{performance_measures}
+We measure the total production of DVD's, the average production per DVD,
+and the average throughput.
+Apart from that, we measure some more statistics per machine, to look for bottlenecks:
+The number of breakdowns, the total amount of DVD's a machine has produced,
+the total amount of discarded DVD's and the time the machine is down, busy producing, or idle.
+
 \subsection{The eventgraph}
 This is our event graph.
 \begin{figure}[H]
@@ -148,6 +164,11 @@ This is our event graph.
         \node[vertex] (eos) at (3.5,-6.5) {End of sim};
 
         % Arcs for machine start and finish events
+        %\node[fakeVertex] (radius4) at (-2.0,1.1) {};
+        %\node[fakeVertex] (radius5) at (-1.8,0.6) {};
+        %\node[fakeVertex] (radius6) at (-2.2,0.6) {};
+        %\path[edge,bend left=60,dashed] (radius6) to (radius4);
+        %\path[arc,bend left=60,dashed] (radius4) to (radius5);
         \path[arc,bend left=10] (sA) to (fA);
         \path[arc,bend left=10,dashed] (fA) to (sA);
         \path[arc,dashed] (fA) to (sB); % buffer.add_product
@@ -198,43 +219,50 @@ This is our event graph.
 \end{figure}
 
 \subsection{The event handlers}
+% Updating state - measure performance, schedule new events.
 \begin{enumerate}
-% TODO !
-
     % The machine start and finish events
     \item Machine start:
         This is the event where the machine starts producing his DVD (or batch of DVD's).
-        % Updating state - measure performance, schedule new events.
-    \item Machine finish
-        % Specials for each machine
+        It removes a DVD from the previous buffer
+        (except for machine A of course, it creates a new DVD),
+        it updates it's status to busy, and then schedules the machine end event.
+        Removing an item from the previous buffer can possibly schedule a machine start event, if it was doing nothing because the buffer was full.
+    \item Machine finish:
+        This is the event where the machine finishes producing his DVD (or batch of DVD's).
+        It sets it's status to idle and adds a product to one of it's receiver buffers (when they are not full etc.).
+        Furthermore it updates the total amount of produced DVD's and it schedules a machine start event.
+        Adding an item to the buffer can possibly schedule a machine start event if it was idle due to a full buffer.
+        For machine B the finish producing can also discard a DVD,
+        for machine C and D it can schedule a start repair event.
 
     % Buffer events
-    \item Put in crate
+    \item Put in crate:
+        This event is fired when a DVD leaves the conveyor belt, and is put in a crate, that is the buffer between machine B and C.
+        It adds the DVD to the buffer of course, and schedules the next put in crate event.
+        The conveyor belt is modelled as a queue of times between each DVD on the conveyor belt. That way we can effectively get the time of the first DVD that leaves the conveyor belt.
+        This event can also possibly schedule a start producing event in case of idle machines due to a full buffer.
 
     % The breakdown events
-    \item MA starts repairing
-    \item MA finishes repairing
-    \item MC starts cleaning
-    \item MC finishes cleaning
-    \item MD finishes ink replacing
+    \item Start repairing:
+        This is the event that is fired in case of a breakdown, machine cleaning, or ink replacing. The effect in real life is that a machine cannot be used for a while, and is called start repairing for convenience.
+        It updates the status of the machine to repairing
+        (or repairing double if two repairmen are nescessary).
+        If there are no repairmen available it sets the status to broken.
+        It also updates the amount of breakdowns, the amount of discarded DVD's (if nescessary) and the amount of available repairmen.
+        It schedules the end repair event.
+        Note that machine B does not have repair events.
+
+    \item Finish repairing:
+        The end repair event is fired when a repairman is done with it's task.
+        It sets the machine's status to idle, adds a repairman (or two) to the available repairmen list.
+        It schedules a start producing event and for machine A also the new start repair event.
+
+    % EOS
+    \item End of simulation:
+        This event ends the simulation, it fires either after a specified duration, or when the user stops the simulation manually.
+        
 \end{enumerate}
-
-\subsection{Performance measures}
-\label{performance_measures}
-We measure the total production of DVD's, the average production per DVD,
-and the average throughput.
-Apart from that, we measure some more statistics per machine, to look for bottlenecks:
-The number of breakdowns, the total amount of DVD's a machine has produced,
-the total amount of discarded DVD's and the time the machine is down,
-busy producing, or doing nothing.
-
-\subsection{State}
-The factory has a set of state variables, and each of the machines also has some state variables of his own.
-The state of the factory consists of the current time, whether it is day or night and the amount of repairman available.
-Of course, the state also contains a list of machines, each of these machines have the following state variables:
-The status of the machine, this is used to see if the machine is busy producing DVD's, if it is currently not doing anything, or if it's broken or being repaired (possibly with two repairmen).
-It also maintains whether or not it has discarded it's latest DVD\@.
-Since each machine is assigned his own buffer (with exception of machines A - for them two machines share a buffer), it also maintains the amount of DVD's in the buffer.
 
 
 \section{Input analysis}
@@ -307,6 +335,8 @@ From this it follows that the confidence interval can be computed as
 
 
 \subsection{Results}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
 vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
 no sea takimata sanctus est Lorem ipsum dolor sit amet.
 

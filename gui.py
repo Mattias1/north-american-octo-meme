@@ -75,7 +75,7 @@ class Application(Frame):
         self.stop()
         # If necessary, we can phone an extra repair guy, so we can just pick 11,8.
         # In practise this doesnt matter, as we are never short of repair guys.
-        self.seed = 123#self.seed_entry.get() or random.random()
+        self.seed = self.seed_entry.get() or random.random()
         self.factory = Factory(11, 8, 20, 20, 20, 20, self.seed, 366*24*60*60)#604800)
         self.running = True
         sim_thread = Thread(target=self.factory.start)

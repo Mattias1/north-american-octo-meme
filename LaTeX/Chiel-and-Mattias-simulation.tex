@@ -176,10 +176,47 @@ no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
 
 \section{Input analysis}
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+\subsection{Data collection}
+Some parameters are exact, others have a certain degree of randomness.
+For the latter ones, we present here how the data collection (i.e.\ generation) is implemented in the simulation.
+
+Some input spaces were given in the form of a theoretical probability distribution.
+Others were given in the form of an empirical probability distribution.
+For dealing with empirical distributions, we pick a random number from the sorted empirical data, then pick a number between this number and the next number with uniform probability, i.e.\ we interpolate the empirical distribution linearly.
+
+\begin{table}[h]
+    \begin{tabular}{|l|l|l|l|p{4cm}|}
+    \hline
+                    & Machine 1         & Machine 2         & Machine 3                     & Machine 4 \\ \hline
+    uptime          & $\exp(480*60)$    &                   & 3\% of batches                & \parbox{5cm}{40\%, 40\%, 20\% uniformly\\ after producing resp.\\ 200, 200±1, 200±2 dvd's} \\ \hline
+    repairtime      & $\exp(120*60)$    &                   & exact 5 min                   & $\mathrm{normal}(15*60, 60)$ \\ \hline
+    production time & empirical         & empirical         & $\exp(10) + \exp(7) + 3*60$   & empirical \\ \hline
+    dvd discards    &                   & 2\% of the dvd's  &                               & \\ \hline
+    \end{tabular}
+    \caption {Input distributions}
+\end{table}
+
+%Machine 1:
+    %uptime: exp distr 480min
+    %repairtime: exp distr 120min
+    %production time: empirical distribution
+
+%Machine2:
+    %dvd discard: 2\% of the dvd's uniformly
+    %production time: empirical distribution
+
+%Machine3:
+    %uptime: 3\% of the batches uniformly
+    %production time: exp 10sec / dvd + exp 7 sec / dvd + 3min
+
+%Machine4:
+    %uptime: resp. 40\%, 40\%, 20\% uniformly after resp. 200, 200±1, 200±2
+    %repairtime: normal mean 15min std 1min
+    %production time: empirical distribution
+
+
+
 
 
 \section{Experiments}

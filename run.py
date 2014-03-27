@@ -5,14 +5,14 @@ import scipy
 import scipy.stats
 
 start_time = time()
-print('start_time: ' + str(start_time))
+#print('start time: ' + str(start_time) + '\n')
 
-#seeds = [204, 555, 359, 923, 172, 413, 498, 849, 130, 702, 985, 743, 525, 288, 965, 222, 601, 572, 807, 321, 248, 223, 287, 669, 252, 119, 417, 763, 307, 349, 361, 740, 449, 153, 894, 551, 749, 730, 857, 910, 680, 343, 820, 792, 937, 443, 160, 324, 833, 752, 193, 766, 173, 465, 669, 451, 216, 950, 956, 511, 367, 315, 738, 179, 355, 591, 428, 294, 550, 170, 522, 232, 306, 350, 401, 508, 429, 620, 862, 251, 482, 975, 337, 843, 908, 901, 375, 499, 184, 827, 305, 675, 407, 945, 410, 368, 958, 308, 876, 229]
+seeds = [204, 555, 359, 923, 172, 413, 498, 849, 130, 702, 985, 743, 525, 288, 965, 222, 601, 572, 807, 321, 248, 223, 287, 669, 252, 119, 417, 763, 307, 349, 361, 740, 449, 153, 894, 551, 749, 730, 857, 910, 680, 343, 820, 792, 937, 443, 160, 324, 833, 752, 193, 766, 173, 465, 669, 451, 216, 950, 956, 511, 367, 315, 738, 179, 355, 591, 428, 294, 550, 170, 522, 232, 306, 350, 401, 508, 429, 620, 862, 251, 482, 975, 337, 843, 908, 901, 375, 499, 184, 827, 305, 675, 407, 945, 410, 368, 958, 308, 876, 229]
 seeds = [470, 770, 689, 376, 100, 753, 755, 682, 243, 432, 454, 760, 947, 184, 299, 631, 571, 644, 650, 483]
 duration = 2 * 24 * 60 * 60
 
 configuration_space = [20, 40, 200]
-configuration_space = [15]
+#configuration_space = [15, 40]
 
 
 class Sample:
@@ -57,10 +57,10 @@ class Configuration:
         )
 
     def __str__(self):
-        return 'configuration: {}\nresult: {}\n'.format(
+        return 'configuration: {}\nproduction results: {}\nthroughput results: {}\n'.format(
                 str((self.batchsize, self.buffersizeA, self.buffersizeB, self.buffersizeC)),
-                str((self.mean_produced, self.deviation_produced, self.confidence_interval_produced,
-                   self.mean_throughput, self.deviation_throughput, self.confidence_interval_throughput)))
+                str((self.mean_produced, self.deviation_produced, self.confidence_interval_produced)),
+                str((self.mean_throughput, self.deviation_throughput, self.confidence_interval_throughput)))
 
     def __lt__(self, conf2):
         return self.mean_produced < conf2.mean_produced
@@ -88,3 +88,5 @@ def run():
     print('\n'.join((str(r) for r in sorted(results))))
 
 run()
+
+print('simulation duration: ' + str(time() - start_time) + '\n')

@@ -95,7 +95,9 @@ class Machine:
             self.batch = []
             return
 
-        assert self.status == BUSY
+        if self.status != BUSY:
+            # apparently BORED
+            return
 
         self.status = BORED
         for buffer in self.receivers:

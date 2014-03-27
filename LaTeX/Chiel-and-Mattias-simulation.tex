@@ -280,17 +280,29 @@ This way we do not have to care about catching the empirical data in a theoretic
 In table~\ref{table:input_table} we have listed the kinds of input data we have for the several machine parameters.
 
 \begin{table}[h]
-    \begin{tabular}{|l|l|l|l|p{4cm}|}
+    \begin{tabular}{|p{4cm}|p{4cm}|p{5cm}|}
     \hline
-                    & Machine A         & Machine B         & Machine C                     & Machine D \\ \hline
-    uptime          & $\exp(480*60)$    &                   & 3\% of batches                & \parbox{5cm}{40\%, 40\%, 20\% uniformly\\ after producing resp.\\ 200, 200±1, 200±2 DVD's} \\ \hline
-    repairtime      & $\exp(120*60)$    &                   & exact 5 min                   & $\mathrm{normal}(15*60, 60)$ \\ \hline
-    production time & empirical         & empirical         & $\exp(10) + \exp(7) + 3*60$   & empirical \\ \hline
-    DVD discards    &                   & 2\% of the DVD's  &                               & \\ \hline
+                    & Machine A         & Machine B         \\ \hline
+    uptime          & expontial with mean 8 hours &           \\ \hline
+    repairtime      & expontial with mean 2 hours &           \\ \hline
+    production time & empirical         & empirical         \\ \hline
+    DVD discards    &                   & 2\% of the DVD's  \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \begin{tabular}{|p{4cm}|p{4cm}|p{5cm}|}
+    \hline
+                & Machine C                     & Machine D \\ \hline
+uptime          & 3\% of batches                & \parbox{5cm}{40\%, 40\%, 20\% uniformly after producing resp. $200, 200 \pm 1, 200 \pm 2$ DVD's} \\ \hline
+repairtime      & exact 5 minutes                   & normal with mean 15 minutes and standard deviation 1 minute \\ \hline
+production time & sum of two exponentials with mean 10 and 7 seconds plus a fixed 3 minutes   & empirical \\ \hline
+DVD discards    &                               & \\ \hline
     \end{tabular}
     \caption {Input distributions}
     \label{table:input_table}
 \end{table}
+
 
 %Machine 1:
     %uptime: exp distr 480min

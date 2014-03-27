@@ -276,6 +276,8 @@ For dealing with empirical distributions, we pick a random number from the sorte
 This way we do not have to care about catching the empirical data in a theoretical probability distribution.
 In table~\ref{table:input_table} we have listed the kinds of input data we have for the several machine parameters.
 
+\pagebreak
+
 \begin{table}[h]
     \begin{tabular}{|p{4cm}|p{4cm}|p{5cm}|}
     \hline
@@ -332,9 +334,8 @@ While having the simulation at hand anyway, we can also have a look for possible
 
 We will choose various configurations for the buffersizes and the batchsize, and run the simulation several times for each of the configurations.
 
-For each configuration:
-    run simulation and compute performance measures and confidence interval
-    conclude which configurations provide significant improvements
+For each configuration: run simulation and compute performance measures and confidence interval.
+Then conclude which configurations provide significant improvements
 
 
 As confidence level $1 - \alpha$ we choose the fairly standard value of $0.95$.
@@ -380,6 +381,13 @@ We list the most relevant results below that are representative enough to illust
     \label{table:results_table}
 \end{table}
 
+We also programmed a GUI to be able to watch the production line closely for bottlenecks.
+We tracked several statistics for individual machines.
+One relevant thing to mention from this, is that machines of type A hardly have idle time in comparison to other machines.
+The machines of type C have the most idle time, then B and then D.
+The downtime is highest for A, then for D and then for C. Machines of type B don't have downtime by design.
+Thus the bottlenecks are around machines of type A and type D.
+
 
 \chapter{Conclusions}
 From the results presented above we can draw several conclusions.
@@ -389,6 +397,8 @@ It is striking to see that the buffersize of buffers after machines of type A ha
 The first three results listed as the best results comprise all possible values of this buffersize, while the other parameters are constant.
 Nonetheless, they perform all extremely well.
 Furthermore, in all other results (including the worst listed above) the buffersizes of concern appeared to occur randomly with respect to the performance.
+This is supported by the observation that the machines of type A hardly have idle time.
+Apparently they just can't keep up with the speed of the subsequent machines, and consequently the subsequent buffer is never full.
 
 The second thing to notice is that all best results have 200 as buffersize for the buffer between C and D.
 
@@ -402,8 +412,10 @@ The performance of the average throughput seems to be more or less inversely pro
 This can be clearly seen in the results listed above, but in the other results, this relation is less clear. Since for this reason the two performance measures cannot be optimized at the same time and since the production speed is clearly most important, we would advise to adapt the batch and buffer sizes to optimize the production speed.
 
 In conclusion we can say that the buffersize between A and B can be left with the current size, namely 20, as it will not improve the performance.
+Moreover, it may be wise to consider installing additional machines of type A, as the relatively low production speed of machines A causes a bottleneck in the production line.
 Furthermore, the buffersize between C and D should be high (preferably double the batchsize), as that probably will improve the performance.
 The batchsize can also be left as it is, for the reasons explained above.
+If there are possibilities to improve on the downtime of machines, the priority of the machine types should be from high to low: A, D, C.
 
 \chapter*{Appendix}
 

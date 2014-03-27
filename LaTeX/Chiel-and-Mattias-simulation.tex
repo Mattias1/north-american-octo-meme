@@ -77,12 +77,12 @@ We want to find out if changing this size results in an improvement of the perfo
 % TODO: picture of production line
 
 \subsection{Breakdowns}
-As we have already put forward, some machines may breakdown.
+As we already have mentioned, some machines may break down.
 This is the case for machines of type A and C.
 They break according to a given probability distribution, which is treated in chapter~\ref{input_analysis}.
 If such a machine is broken, the DVD's there a currently processed are lost, and the machine has to be repaired.
-During day, there are 10 repairmen, and an 11th can be called if necessary.
-During night, there are 7 repairmen, and an 8th can be called if necessary.
+During the day, there are 10 repairmen, and an 11th can be called if necessary.
+During the night, there are 7 repairmen, and an 8th can be called if necessary.
 Each broken machine can be repaired by a single repairman.
 Sometimes, a machine of type A needs two repairmen to be repaired.
 When a breakdown occurs while no repairmen are available, the machine will be left as broken, until a repairman comes available.
@@ -200,7 +200,7 @@ This is our event graph.
         \path[arc,dashed] (fC) to (rsC);
         \path[arc] (rsC) to (rfC);
         \path[arc,dashed] (rfC) to (sC);
-        \path[arc,dashed] (rfC) to (sD);
+        %\path[arc,dashed] (rfC) to (sD);
         \path[arc] (fD) to (rfD);
         \path[arc,dashed] (rfD) to (sD);
 

@@ -208,14 +208,14 @@ This is our event graph.
 
 
 \section{Input analysis}
-
-\subsection{Data collection}
 Some parameters are exact, others have a certain degree of randomness.
 For the latter ones, we present here how the data collection (i.e.\ generation) is implemented in the simulation.
 
-Some input spaces were given in the form of a theoretical probability distribution.
-Others were given in the form of an empirical probability distribution.
+Some input spaces are given in the form of a theoretical probability distribution.
+Others are given in the form of an empirical probability distribution.
 For dealing with empirical distributions, we pick a random number from the sorted empirical data, then pick a number between this number and the next number with uniform probability, i.e.\ we interpolate the empirical distribution linearly.
+This way we do not have to care about catching the empirical data in a theoretical probability distribution.
+In table~\ref{table:input_table} we have listed the kinds of input data we have for the several machine parameters.
 
 \begin{table}[h]
     \begin{tabular}{|l|l|l|l|p{4cm}|}
@@ -227,6 +227,7 @@ For dealing with empirical distributions, we pick a random number from the sorte
     dvd discards    &                   & 2\% of the dvd's  &                               & \\ \hline
     \end{tabular}
     \caption {Input distributions}
+    \label{table:input_table}
 \end{table}
 
 %Machine 1:

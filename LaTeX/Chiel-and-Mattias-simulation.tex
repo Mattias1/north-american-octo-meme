@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass{report}
 
 \title{Simulation assignment}
 \author{Chiel ten Brinke (3677133) and Mattias Beimers (3672565)}
@@ -24,8 +24,6 @@
 \newcommand{\calCC}{\ensuremath{\mathcal{C'}}}
 \newcommand{\reduc}{\ensuremath{\leq_P} }
 
-\newtheorem{lemma}{Lemma}[section]
-
 \begin{document}
 \tikzstyle{vertex}=[circle,very thick,draw=black,fill=black!25,minimum size=35pt,inner sep=0pt,align=center,text width=30pt,font=\scriptsize]
 \tikzstyle{fakeVertex}=[circle,minimum size=1pt,inner sep=0pt]
@@ -34,9 +32,10 @@
 \tikzstyle{weight} = [font=\scriptsize]
 
 \maketitle
+\tableofcontents
 
 
-\section{Problem description}
+\chapter{Problem description}
 We present a simulation study for the buffer- and batch-size design of a production line of DVD's.
 Moreover, we analyze improvements for the line, by, among others, finding the best buffer- and batch-sizes and alleviating the impact of bottlenecks.
 
@@ -55,11 +54,11 @@ These problems are solved by repairmen, working in shifts.
 Our goal is to optimize the configuration for the batchsize and the buffersizes in terms of performance measures by means of a simulation.
 A more detailed description of the simulation that is to be built is found in chapter~\ref{problem_analysis}.
 
-\section{Analysis of the problem}
+\chapter{Analysis of the problem}
 \label{problem_analysis}
 Here follows a more detailed description of the production line that is to be simulated.
 
-\subsection{Machines and buffers}
+\section{Machines and buffers}
 There are 4 machines of type A, and 2 machines of each of the types B, C and D.
 Machine A has unlimited raw material input.
 Between every two types of machines there are buffers of a certain size, which can store DVD's until they are fetched by a machine.
@@ -70,12 +69,12 @@ The last buffer, between type C and D, can only receive from a fixed machine C, 
 The current sizes of each buffer is 20 DVD's.
 We want to find out if changing this size results in an improvement of the performance measures.
 
-\subsection{Batches}
+\section{Batches}
 Every machine only processes a single DVD at a time, except for machine C, which processes a whole batch at a time.
 The current size of the batch is 20 DVD's.
 We want to find out if changing this size results in an improvement of the performance measures.
 
-\subsection{Breakdowns}
+\section{Breakdowns}
 As we already have mentioned, some machines may break down.
 This is the case for machines of type A and C.
 They break according to a given probability distribution, which is treated in chapter~\ref{input_analysis}.
@@ -92,7 +91,7 @@ This costs a repairman as well.
 However, the DVD's that are currently processed are not lost.
 
 
-\section{Assumptions}
+\chapter{Assumptions}
 Here we list the most relevant assumptions for our simulation.
 \begin{enumerate}
     \item
@@ -112,8 +111,8 @@ Here we list the most relevant assumptions for our simulation.
 \end{enumerate}
 
 
-\section{The model}
-\subsection{State}
+\chapter{The model}
+\section{State}
 The factory has a set of state variables, and each of the machines also has some state variables of his own.
 The state of the factory consists of the current time, whether it is day or night and the number of repairmen available.
 
@@ -125,7 +124,7 @@ Finally, we have buffers, which are just containers of DVD's.
 A special case is the conveyor belt, which also maintains whether it halted or not.
 All machines and buffers know from whom they receive and to whom they deliver.
 
-\subsection{Performance measures}
+\section{Performance measures}
 \label{performance_measures}
 We measure the total production of DVD's, the average production speed,
 and the average throughput.
@@ -133,7 +132,7 @@ Apart from that, we measure some more statistics per machine, to look for bottle
 the number of breakdowns, the total amount of DVD's a machine has produced,
 the total amount of discarded DVD's and the time the machine is down, busy producing, or idle.
 
-\subsection{The eventgraph}
+\section{The eventgraph}
 This is our event graph.
 \begin{figure}[H]
     \centering
@@ -219,7 +218,7 @@ This is our event graph.
     \caption{The eventgraph of the simulation.}\label{fig:event-graph}
 \end{figure}
 
-\subsection{The event handlers}
+\section{The event handlers}
 % Updating state - measure performance, schedule new events.
 \begin{enumerate}
     % The machine start and finish events
@@ -266,7 +265,7 @@ This is our event graph.
 \end{enumerate}
 
 
-\section{Input analysis}
+\chapter{Input analysis}
 \label{input_analysis}
 Some parameters are exact, others comprise a certain degree of randomness.
 For the latter ones, we present here how the data collection (i.e.\ generation) is implemented in the simulation.
@@ -321,12 +320,12 @@ DVD discards    &                               & \\ \hline
 
 
 
-\section{Experiments}
+\chapter{Experiments}
 % TODO:
 % - arguments for running time of choice (steady state etc)
 % - input analysis
 %
-\subsection{Set up}
+\section{Set up}
 Our goal is to give insight in possible improvements in the production process of the DVD production line with respect to changes in the buffersizes and the batchsize of the machines.
 To do so, we will mainly investigate the performance measures mentioned in section~\ref{performance_measures}, and see wether they can coexist optimally or there is a trade-off involved.
 While having the simulation at hand anyway, we can also have a look for possible bottlenecks caused by things other than the configuration of the buffersizes and the batchsize.
@@ -347,7 +346,7 @@ From this it follows that the confidence interval can be computed as
 (\bar{x} - \frac{1.96s}{\sqrt{n}}, \bar{x} + \frac{1.96s}{\sqrt{n}}). \]
 
 
-\subsection{Results}
+\section{Results}
 Running the simulation gave interesting results.
 We simulated a week of the production line for various batch and buffer size configurations.
 Moreover, we used 100 fixed seeds for each run, to make sure the confidence interval is decent enough.
@@ -385,7 +384,7 @@ production results: (41069.666666666664, 27.131879567934266, [41007.100440191782
 throughput results: (4282.6478235611057, 365.30674514012816, [3440.2489587123887, 5125.0466884098232])
 
 
-\section{Conclusions}
+\chapter{Conclusions}
 From the results presented above we can draw several conclusions.
 Let us first focus on the most important performance measure, namely the average production speed.
 
@@ -402,18 +401,50 @@ Even stronger, a larger batchsize appears too worsen the results a lot.
 This could be explained by noticing that machines of type C have to wait longer before it can start and thus leaving itself \emph{and} the machines of type D idle.
 
 
-The performance of the average throughput seems to be more or less inversely proportional with respect to the performance of the average production speed.
-This can be clearly seen in the 
+The performance of the average throughput seems to be more or less inversely proportional to the performance of the average production speed.
+This can be clearly seen in the results listed above, but in the other results, this relation is less clear. Since for this reason the two performance measures cannot be optimized at the same time and since the production speed is clearly most important, we would advise to adapt the batch and buffer sizes to optimize the production speed.
 
 In conclusion we can say that the buffersize between A and B can be left with the current size, namely 20, as it will not improve the performance.
 Furthermore, the buffersize between C and D should be high (preferably double the batchsize), as that probably will improve the performance.
-The batchsize can also be left as it is.
+The batchsize can also be left as it is, for the reasons explained above.
 
-\section*{Appendix}
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-no sea takimata sanctus est Lorem ipsum dolor sit amet.
+\chapter*{Appendix}
 
+\section*{Minutes of interview with domain expert}
+
+4 machines of type A, 2 machines B, C and D.
+One DVD at a time, except C, which processes batches.
+Buffers between each two machines in the line.
+Two buffers from A to B.
+Buffers between B and C are assembly lines with crates at end.
+Size of buffers is 20.
+Cannot be greater than 200.
+Machine A has unlimited input.
+
+Machines can breakdown.
+Machine A: avg 480min uptime, exp distribution.
+Repairtime: avg 120min, exp distribution.
+
+Machine B:
+    DVD is thrown out.
+    Happens to 2\% on average.
+
+Machine C:
+­ Breaks down.
+  Cleaning costs exactly 5 minutes.
+  Happens on average on 3\% of all batches.
+  Batch is not lost.
+  ­ Production time (3 fases):
+        Fase 1: avg 10 sec / dvd, exp distribution.
+        Fase 2: avg 6 sec / dvd, exp distribution.
+        Fase 3: 3 minutes, exact.
+
+Machine D:
+­ Ink needs to be replaced.
+  On avg 15min, stdev = 1 min.
+  Happens after, 40\% 200 DVDs, 40\% 200 $\pm$ 1 DVD, 20\% 200 $\pm$ 2DVDs.
+
+During the day, there are 10 repairmen, and an 11th can be called if necessary.
+During the night, there are 7 repairmen, and an 8th can be called if necessary.
 
 \end{document}

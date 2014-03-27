@@ -75,8 +75,6 @@ Every machine only processes a single DVD at a time, except for machine C, which
 The current size of the batch is 20 DVD's.
 We want to find out if changing this size results in an improvement of the performance measures.
 
-% TODO: picture of production line
-
 \subsection{Breakdowns}
 As we have already put forward, some machines may breakdown.
 This is the case for machines of type A and C.
@@ -129,7 +127,7 @@ All machines and buffers know from whom they receive and to whom they deliver.
 
 \subsection{Performance measures}
 \label{performance_measures}
-We measure the total production of DVD's, the average production per DVD,
+We measure the total production of DVD's, the average production speed,
 and the average throughput.
 Apart from that, we measure some more statistics per machine, to look for bottlenecks:
 the number of breakdowns, the total amount of DVD's a machine has produced,
@@ -350,20 +348,68 @@ From this it follows that the confidence interval can be computed as
 
 
 \subsection{Results}
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-no sea takimata sanctus est Lorem ipsum dolor sit amet.
+Running the simulation gave interesting results.
+We simulated a week of the production line for various batch and buffer size configurations.
+Moreover, we used 100 fixed seeds for each run, to make sure the confidence interval is decent enough.
+
+We list the most relevant results below that are representative enough to illustrate the conclusions we have drawn from all the results. We don't list all the results here for reasons of clarity.
+
+WORST:
+configuration: (40, 200, 200, 40)
+production results: (27198.555555555555, 526.30217110386502, [25984.900572713002, 28412.210538398107])
+throughput results: (1579.2680692241947, 18.061187139128066, [1537.6188969977538, 1620.9172414506356])
+
+configuration: (40, 40, 200, 40)
+production results: (27375.444444444445, 592.06041149885834, [26010.150687338519, 28740.738201550372])
+throughput results: (1573.040276998177, 22.339821342340983, [1521.524556606832, 1624.555997389522])
+
+configuration: (40, 20, 200, 40)
+production results: (27483.777777777777, 466.31944754695127, [26408.44320348803, 28559.112352067525])
+throughput results: (1565.622584597756, 18.322759035563173, [1523.3702264965273, 1607.8749426989848])
+
+BEST:
+configuration: (20, 20, 40, 200)
+production results: (40960.444444444445, 66.365174751168155, [40807.406077046042, 41113.482811842849])
+throughput results: (3191.3877651221392, 147.91704351154394, [2850.2904511426077, 3532.4850791016706])
+
+configuration: (20, 40, 40, 200)
+production results: (40987.666666666664, 46.591308202281681, [40880.226917295586, 41095.106416037743])
+throughput results: (3133.1749403399695, 123.0249144741494, [2849.478978850454, 3416.8709018294849])
+
+configuration: (20, 200, 40, 200)
+production results: (40987.666666666664, 46.591308202281681, [40880.226917295586, 41095.106416037743])
+throughput results: (3133.1749403399695, 123.0249144741494, [2849.478978850454, 3416.8709018294849])
+
+configuration: (10, 200, 20, 200)
+production results: (41069.666666666664, 27.131879567934266, [41007.100440191782, 41132.232893141547])
+throughput results: (4282.6478235611057, 365.30674514012816, [3440.2489587123887, 5125.0466884098232])
 
 
 \section{Conclusions}
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-no sea takimata sanctus est Lorem ipsum dolor sit amet.
+From the results presented above we can draw several conclusions.
+Let us first focus on the most important performance measure, namely the average production speed.
+
+It is striking to see that the buffersize of buffers after machines of type A hardly matters.
+The first three results listed as the best results comprise all possible values of this buffersize, while the other parameters are constant.
+Nonetheless, they perform all extremely well.
+Furthermore, in all other results (including the worst listed above) the buffersizes of concern appeared to occur randomly with respect to the performance.
+
+The second thing to notice is that all best results have 200 as buffersize for the buffer between C and D.
+
+Thirdly, notice that choosing the batchsize maximal does not give better results.
+This could explained by the fact that machine D is a bottleneck in the production line.
+Even stronger, a larger batchsize appears too worsen the results a lot.
+This could be explained by noticing that machines of type C have to wait longer before it can start and thus leaving itself \emph{and} the machines of type D idle.
 
 
-\section{Appendix}
+The performance of the average throughput seems to be more or less inversely proportional with respect to the performance of the average production speed.
+This can be clearly seen in the 
+
+In conclusion we can say that the buffersize between A and B can be left with the current size, namely 20, as it will not improve the performance.
+Furthermore, the buffersize between C and D should be high (preferably double the batchsize), as that probably will improve the performance.
+The batchsize can also be left as it is.
+
+\section*{Appendix}
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
 tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
 vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,

@@ -88,8 +88,7 @@ We measure the total production of DVD's, the average production per DVD,
 and the average throughput.
 Apart from that, we measure some more statistics per machine, to look for bottlenecks:
 The number of breakdowns, the total amount of DVD's a machine has produced,
-the total amount of discarded DVD's and the time the machine is down,
-busy producing, or doing nothing (idle).
+the total amount of discarded DVD's and the time the machine is down, busy producing, or idle.
 
 \subsection{The eventgraph}
 This is our event graph.
@@ -187,7 +186,7 @@ This is our event graph.
         Removing an item from the previous buffer can possibly schedule a machine start event, if it was doing nothing because the buffer was full.
     \item Machine finish:
         This is the event where the machine finishes producing his DVD (or batch of DVD's).
-        It sets it's status to idle
+        It sets it's status to idle and adds a product
         % Specials for each machine
 
     % Buffer events
@@ -279,6 +278,8 @@ From this it follows that the confidence interval can be computed as
 
 
 \subsection{Results}
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
 vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
 no sea takimata sanctus est Lorem ipsum dolor sit amet.
 

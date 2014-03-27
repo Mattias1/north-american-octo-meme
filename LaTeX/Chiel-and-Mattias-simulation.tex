@@ -38,28 +38,71 @@
 
 \section{Problem description}
 We present a simulation study for the buffer- and batch-size design of a production line of DVD's.
-Moreover, we analyze improvements for the line, by, among others, finding the best buffer- and bacth-sizes and alleviating the impact of bottlenecks.
+Moreover, we analyze improvements for the line, by, among others, finding the best buffer- and batch-sizes and alleviating the impact of bottlenecks.
 
 The production process of DVD's consists of the following steps:
 \begin{enumerate}[A.]
     \item Injection molding
     \item Dye coating and drying
     \item Sputtering, lacquer coating, drying
-    \item Printing and finishing 
+    \item Printing and finishing
 \end{enumerate}
 The machines have limited buffer space, and step C is done with batch processing.
 Machines can break down, possibly causing them to be out of production for a while,
 and discarding DVD's they were producing. Also some machines need cleaning or replacing of ink.
 These problems are solved by repairmen, working in shifts.
 
+Our goal is to optimize the configuration for the batchsize and the buffersizes in terms of performance measures by means of a simulation.
+A more detailed description of the simulation that is to be built is found in chapter~\ref{problem_analysis}.
+
+\section{Analysis of the problem}
+\label{problem_analysis}
+Here follows a more detailed description of the production line that is to be simulated.
+
+\subsection{Machines and buffers}
+There are 4 machines of type A, and 2 machines of each of the types B, C and D.
+Between every two types of machines there are buffers of a certain size, which can store DVD's until they are fetched by a machine.
+There are two buffers between type A and B, each of which can only from a fixed pair of machines of type A, and can provide to a fixed single machine of type B.
+There are two buffers between type B and C, each of which consists of a conveyor belt followed by a crate.
+These buffers can only receive from a single machine B, but deliver to any of the machines of type C.
+The last buffer, between type C and D, can only receive from a fixed machine C, but deliver to any machine of type D.
+The current sizes of each buffer is 20 DVD's.
+We want to find out if changing this size results in an improvement of the performance measures.
+
+\subsection{Batches}
+Every machine only processes a single DVD at a time, except for machine C, which processes a whole batch at a time.
+The current size of the batch is 20 DVD's.
+We want to find out if changing this size results in an improvement of the performance measures.
+
+% TODO: picture of production line
+
+\subsection{Breakdowns}
+As we have already put forward, some machines may breakdown.
+This is the case for machines of type A and C.
+They break according to a given probability distribution, which is treated in chapter~\ref{input_analysis}.
+If such a machine is broken, the DVD's there a currently processed are lost, and the machine has to be repaired.
+During day, there are 10 repairmen, and an 11th can be called if necessary.
+During night, there are 7 repairmen, and an 8th can be called if necessary.
+Each broken machine can be repaired by a single repairman.
+Sometimes, a machine of type A needs two repairmen to be repaired.
+When a breakdown occurs while no repairmen are available, the machine will be left as broken, until a repairman comes available.
+
+Machines of type B cannot breakdown, but may destroy a DVD by accident.
+Machines of type D cannot breakdown either, but sometimes the ink needs to be replaced.
+This costs a repairman as well.
+However, the DVD's that are currently processed are not lost.
+
+
 \section{Assumptions}
-These are some of our assumptions:
+Here we list the most relevant assumptions for our simulation.
 \begin{enumerate}
     \item
         Machine A discards any DVD's that is being produced at the event of a breakdown.
     \item
-        When machine A breaks, sometimes there are two ppl repairing it.
-        We assume that this happends half of the time.
+        Machine A has unlimited raw material input.
+    \item
+        When machine A breaks, sometimes there are two repairmen needed to repair it.
+        We assume that this happens half of the time.
         This way we are not likely to assume too little.
     \item
         Machines C and D are expected to start with cleaning or ink replacing after the (batch of) DVD's is finished.
@@ -67,10 +110,9 @@ These are some of our assumptions:
         We assume that a repairman finishes repairing the machine before going home.
     \item
         We start the simulation at 6 o'clock in the morning.
+    \item
+        We assume that calling an extra repairman costs negligible time.
 \end{enumerate}
-
-\section{Analysis of the problem}
-We want to solve this problem by performing a simulation study. % ???
 
 
 \section{The model}
@@ -196,7 +238,8 @@ Since each machine is assigned his own buffer (with exception of machines A - fo
 
 
 \section{Input analysis}
-Some parameters are exact, others have a certain degree of randomness.
+\label{input_analysis}
+Some parameters are exact, others comprise a certain degree of randomness.
 For the latter ones, we present here how the data collection (i.e.\ generation) is implemented in the simulation.
 
 Some input spaces are given in the form of a theoretical probability distribution.
@@ -208,11 +251,11 @@ In table~\ref{table:input_table} we have listed the kinds of input data we have 
 \begin{table}[h]
     \begin{tabular}{|l|l|l|l|p{4cm}|}
     \hline
-                    & Machine 1         & Machine 2         & Machine 3                     & Machine 4 \\ \hline
-    uptime          & $\exp(480*60)$    &                   & 3\% of batches                & \parbox{5cm}{40\%, 40\%, 20\% uniformly\\ after producing resp.\\ 200, 200±1, 200±2 dvd's} \\ \hline
+                    & Machine A         & Machine B         & Machine C                     & Machine D \\ \hline
+    uptime          & $\exp(480*60)$    &                   & 3\% of batches                & \parbox{5cm}{40\%, 40\%, 20\% uniformly\\ after producing resp.\\ 200, 200±1, 200±2 DVD's} \\ \hline
     repairtime      & $\exp(120*60)$    &                   & exact 5 min                   & $\mathrm{normal}(15*60, 60)$ \\ \hline
     production time & empirical         & empirical         & $\exp(10) + \exp(7) + 3*60$   & empirical \\ \hline
-    dvd discards    &                   & 2\% of the dvd's  &                               & \\ \hline
+    DVD discards    &                   & 2\% of the DVD's  &                               & \\ \hline
     \end{tabular}
     \caption {Input distributions}
     \label{table:input_table}
@@ -222,15 +265,12 @@ In table~\ref{table:input_table} we have listed the kinds of input data we have 
     %uptime: exp distr 480min
     %repairtime: exp distr 120min
     %production time: empirical distribution
-
 %Machine2:
-    %dvd discard: 2\% of the dvd's uniformly
+    %DVD discard: 2\% of the DVD's uniformly
     %production time: empirical distribution
-
 %Machine3:
     %uptime: 3\% of the batches uniformly
-    %production time: exp 10sec / dvd + exp 7 sec / dvd + 3min
-
+    %production time: exp 10sec / DVD + exp 7 sec / DVD + 3min
 %Machine4:
     %uptime: resp. 40\%, 40\%, 20\% uniformly after resp. 200, 200±1, 200±2
     %repairtime: normal mean 15min std 1min
@@ -246,7 +286,7 @@ In table~\ref{table:input_table} we have listed the kinds of input data we have 
 % - input analysis
 %
 \subsection{Set up}
-Our goal is to give insight in possible improvements in the production process of the dvd production line with respect to changes in the buffersizes and the batchsize of the machines.
+Our goal is to give insight in possible improvements in the production process of the DVD production line with respect to changes in the buffersizes and the batchsize of the machines.
 To do so, we will mainly investigate the performance measures mentioned in section~\ref{performance_measures}, and see wether they can coexist optimally or there is a trade-off involved.
 While having the simulation at hand anyway, we can also have a look for possible bottlenecks caused by things other than the configuration of the buffersizes and the batchsize.
 

@@ -61,6 +61,7 @@ Here follows a more detailed description of the production line that is to be si
 
 \subsection{Machines and buffers}
 There are 4 machines of type A, and 2 machines of each of the types B, C and D.
+Machine A has unlimited raw material input.
 Between every two types of machines there are buffers of a certain size, which can store DVD's until they are fetched by a machine.
 There are two buffers between type A and B, each of which can only from a fixed pair of machines of type A, and can provide to a fixed single machine of type B.
 There are two buffers between type B and C, each of which consists of a conveyor belt followed by a crate.
@@ -80,7 +81,7 @@ We want to find out if changing this size results in an improvement of the perfo
 As we already have mentioned, some machines may break down.
 This is the case for machines of type A and C.
 They break according to a given probability distribution, which is treated in chapter~\ref{input_analysis}.
-If such a machine is broken, the DVD's there a currently processed are lost, and the machine has to be repaired.
+If such a machine is broken, the DVD's that are currently processed are lost (except for machine of type C), and the machine has to be repaired.
 During the day, there are 10 repairmen, and an 11th can be called if necessary.
 During the night, there are 7 repairmen, and an 8th can be called if necessary.
 Each broken machine can be repaired by a single repairman.
@@ -99,8 +100,6 @@ Here we list the most relevant assumptions for our simulation.
     \item
         Machine A discards any DVD's that is being produced at the event of a breakdown.
     \item
-        Machine A has unlimited raw material input.
-    \item
         When machine A breaks, sometimes there are two repairmen needed to repair it.
         We assume that this happens half of the time.
         This way we are not likely to assume too little.
@@ -118,18 +117,22 @@ Here we list the most relevant assumptions for our simulation.
 \section{The model}
 \subsection{State}
 The factory has a set of state variables, and each of the machines also has some state variables of his own.
-The state of the factory consists of the current time, whether it is day or night and the amount of repairman available.
-Of course, the state also contains a list of machines, each of these machines have the following state variables:
-The status of the machine, this is used to see if the machine is busy producing DVD's, if it is currently not doing anything, or if it's broken or being repaired (possibly with two repairmen).
+The state of the factory consists of the current time, whether it is day or night and the number of repairmen available.
+
+Of course, the state also comprises machines, each of these machines have the following state variables:
+the status of the machine, this is used to see if the machine is busy producing DVD's, if it is currently not doing anything, or if it's broken or being repaired (possibly with two repairmen).
 It also maintains whether or not it has discarded it's latest DVD\@.
-Each machine also maintains the amount of DVD's in the buffer after him (so machine B maintains the count of the buffer between machine B and machine C).
+
+Finally, we have buffers, which are just containers of DVD's.
+A special case is the conveyor belt, which also maintains whether it halted or not.
+All machines and buffers know from whom they receive and to whom they deliver.
 
 \subsection{Performance measures}
 \label{performance_measures}
 We measure the total production of DVD's, the average production per DVD,
 and the average throughput.
 Apart from that, we measure some more statistics per machine, to look for bottlenecks:
-The number of breakdowns, the total amount of DVD's a machine has produced,
+the number of breakdowns, the total amount of DVD's a machine has produced,
 the total amount of discarded DVD's and the time the machine is down, busy producing, or idle.
 
 \subsection{The eventgraph}
@@ -223,13 +226,13 @@ This is our event graph.
 \begin{enumerate}
     % The machine start and finish events
     \item Machine start:
-        This is the event where the machine starts producing his DVD (or batch of DVD's).
+        this is the event where the machine starts producing his DVD (or batch of DVD's).
         It removes a DVD from the previous buffer
         (except for machine A of course, it creates a new DVD),
-        it updates it's status to busy, and then schedules the machine end event.
+        it updates its status to busy, and then schedules the machine end event.
         Removing an item from the previous buffer can possibly schedule a machine start event, if it was doing nothing because the buffer was full.
     \item Machine finish:
-        This is the event where the machine finishes producing his DVD (or batch of DVD's).
+        this is the event where the machine finishes producing his DVD (or batch of DVD's).
         It sets it's status to idle and adds a product to one of it's receiver buffers (when they are not full etc.).
         Furthermore it updates the total amount of produced DVD's and it schedules a machine start event.
         Adding an item to the buffer can possibly schedule a machine start event if it was idle due to a full buffer.
@@ -238,14 +241,14 @@ This is our event graph.
 
     % Buffer events
     \item Put in crate:
-        This event is fired when a DVD leaves the conveyor belt, and is put in a crate, that is the buffer between machine B and C.
+        this event is fired when a DVD leaves the conveyor belt, and is put in a crate, that is the buffer between machine B and C.
         It adds the DVD to the buffer of course, and schedules the next put in crate event.
         The conveyor belt is modelled as a queue of times between each DVD on the conveyor belt. That way we can effectively get the time of the first DVD that leaves the conveyor belt.
         This event can also possibly schedule a start producing event in case of idle machines due to a full buffer.
 
     % The breakdown events
     \item Start repairing:
-        This is the event that is fired in case of a breakdown, machine cleaning, or ink replacing. The effect in real life is that a machine cannot be used for a while, and is called start repairing for convenience.
+        this is the event that is fired in case of a breakdown, machine cleaning, or ink replacing. The effect in real life is that a machine cannot be used for a while, and is called start repairing for convenience.
         It updates the status of the machine to repairing
         (or repairing double if two repairmen are nescessary).
         If there are no repairmen available it sets the status to broken.
@@ -254,13 +257,13 @@ This is our event graph.
         Note that machine B does not have repair events.
 
     \item Finish repairing:
-        The end repair event is fired when a repairman is done with it's task.
+        the end repair event is fired when a repairman is done with it's task.
         It sets the machine's status to idle, adds a repairman (or two) to the available repairmen list.
         It schedules a start producing event and for machine A also the new start repair event.
 
     % EOS
     \item End of simulation:
-        This event ends the simulation, it fires either after a specified duration, or when the user stops the simulation manually.
+        this event ends the simulation, it fires either after a specified duration, or when the user stops the simulation manually.
 
 \end{enumerate}
 
@@ -277,17 +280,29 @@ This way we do not have to care about catching the empirical data in a theoretic
 In table~\ref{table:input_table} we have listed the kinds of input data we have for the several machine parameters.
 
 \begin{table}[h]
-    \begin{tabular}{|l|l|l|l|p{4cm}|}
+    \begin{tabular}{|p{4cm}|p{4cm}|p{5cm}|}
     \hline
-                    & Machine A         & Machine B         & Machine C                     & Machine D \\ \hline
-    uptime          & $\exp(480*60)$    &                   & 3\% of batches                & \parbox{5cm}{40\%, 40\%, 20\% uniformly\\ after producing resp.\\ 200, 200±1, 200±2 DVD's} \\ \hline
-    repairtime      & $\exp(120*60)$    &                   & exact 5 min                   & $\mathrm{normal}(15*60, 60)$ \\ \hline
-    production time & empirical         & empirical         & $\exp(10) + \exp(7) + 3*60$   & empirical \\ \hline
-    DVD discards    &                   & 2\% of the DVD's  &                               & \\ \hline
+                    & Machine A         & Machine B         \\ \hline
+    uptime          & expontial with mean 8 hours &           \\ \hline
+    repairtime      & expontial with mean 2 hours &           \\ \hline
+    production time & empirical         & empirical         \\ \hline
+    DVD discards    &                   & 2\% of the DVD's  \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \begin{tabular}{|p{4cm}|p{4cm}|p{5cm}|}
+    \hline
+                & Machine C                     & Machine D \\ \hline
+uptime          & 3\% of batches                & \parbox{5cm}{40\%, 40\%, 20\% uniformly after producing resp. $200, 200 \pm 1, 200 \pm 2$ DVD's} \\ \hline
+repairtime      & exact 5 minutes                   & normal with mean 15 minutes and standard deviation 1 minute \\ \hline
+production time & sum of two exponentials with mean 10 and 7 seconds plus a fixed 3 minutes   & empirical \\ \hline
+DVD discards    &                               & \\ \hline
     \end{tabular}
     \caption {Input distributions}
     \label{table:input_table}
 \end{table}
+
 
 %Machine 1:
     %uptime: exp distr 480min

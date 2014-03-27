@@ -75,7 +75,7 @@ We want to solve this problem by performing a simulation study. % ???
 
 \section{The model}
 \subsection{The eventgraph}
-This is a part of our event graph (without the breakdowns).
+This is our event graph.
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[auto,swap]
@@ -142,37 +142,57 @@ This is a part of our event graph (without the breakdowns).
         \path[arc,dashed] (rfD) to (sD);
 
         % Start of sim arcs
-        \path[draw, thick, ->, line join=round, decorate, decoration={
-                zigzag,
-                segment length=8,
-                amplitude=1,post=lineto,
-                post length=2pt
-        }]  (sos1) -- (sA);
-        \path[draw, thick, ->, line join=round, decorate, decoration={
-                zigzag,
-                segment length=8,
-                amplitude=1,post=lineto,
-                post length=2pt
-        }]  (sos2) -- (eos);
-        \path[draw, thick, ->, line join=round, decorate, decoration={
-                zigzag,
-                segment length=8,
-                amplitude=1,post=lineto,
-                post length=2pt
-        }]  (sos3) -- (rsA);
+        \path[draw, thick, ->, line join=round, decorate, decoration=
+            {zigzag, segment length=8, amplitude=1,post=lineto, post length=2pt
+            }]  (sos1) -- (sA);
+        \path[draw, thick, ->, line join=round, decorate, decoration=
+            {zigzag, segment length=8, amplitude=1,post=lineto, post length=2pt
+            }]  (sos2) -- (eos);
+        \path[draw, thick, ->, line join=round, decorate, decoration=
+            {zigzag, segment length=8, amplitude=1,post=lineto, post length=2pt
+            }]  (sos3) -- (rsA);
     \end{tikzpicture}
     \caption{The eventgraph of the simulation.}\label{fig:event-graph}
 \end{figure}
 
 \subsection{The event handlers}
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+\begin{enumerate}
+% TODO !
+
+    % The machine start and finish events
+    \item Machine start:
+        This is the event where the machine starts producing his DVD (or batch of DVD's).
+        % Updating state - measure performance, schedule new events.
+    \item Machine finish
+        % Specials for each machine
+
+    % Buffer events
+    \item Put in crate
+
+    % The breakdown events
+    \item MA starts repairing
+    \item MA finishes repairing
+    \item MC starts cleaning
+    \item MC finishes cleaning
+    \item MD finishes ink replacing
+\end{enumerate}
+
 \subsection{Performance measures}
 \label{performance_measures}
-vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-\subsection{State}
-no sea takimata sanctus est Lorem ipsum dolor sit amet.
+We measure the total production of DVD's, the average production per DVD,
+and the average throughput.
+Apart from that, we measure some more statistics per machine, to look for bottlenecks:
+The number of breakdowns, the total amount of DVD's a machine has produced,
+the total amount of discarded DVD's and the time the machine is down,
+busy producing, or doing nothing.
 
+\subsection{State}
+The factory has a set of state variables, and each of the machines also has some state variables of his own.
+The state of the factory consists of the current time, whether it is day or night and the amount of repairman available.
+Of course, the state also contains a list of machines, each of these machines have the following state variables:
+The status of the machine, this is used to see if the machine is busy producing DVD's, if it is currently not doing anything, or if it's broken or being repaired (possibly with two repairmen).
+It also maintains whether or not it has discarded it's latest DVD\@.
+Since each machine is assigned his own buffer (with exception of machines A - for them two machines share a buffer), it also maintains the amount of DVD's in the buffer.
 
 
 \section{Input analysis}
